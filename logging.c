@@ -151,12 +151,20 @@ void create_log_file(struct timespec call_time, OPERATION operation, int numfile
 		else
 			fputc('\n',logfp);
 	}
-	//max int size is 11 with null-byte
 	fprintf(logfp,"%d",num_threads);
 	if(system == WINDOWS)
 		fputs("\r\n",logfp);
 	else
 		fputc('\n',logfp);
+	if(mat_rv.type == MAT_INT)
+		fputs("int",logfp);
+	else
+		fputs("float",logfp);
+	if(system == WINDOWS)
+		fputs("\r\n",logfp);
+	else
+		fputc('\n',logfp);
+	//check for matrix vs single val goes here
 	fprintf(logfp,"%d",result.rows);
 	if(system == WINDOWS)
 		fputs("\r\n",logfp);
