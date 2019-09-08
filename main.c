@@ -4,6 +4,7 @@
 //bug with strtoimax where extremely large values return -1
 //create threaded functions
 //add logging for trace return val
+//bug with scalar multiply logging non-float
 
 //notes:
 //not freeing memory before exitting as OS should release allocated memory on exit
@@ -18,7 +19,7 @@ int main(int argc, char *argv[])
 	operation_args.operation = NO_OPERATION;
 	operation_args.format = FORM_DEFAULT;
 	operation_args.nothreading = false;
-	int num_threads = 2;
+	int num_threads = -1;
 	bool logging = false;
 	bool silence = false;
 	char *filename1 = NULL;
@@ -197,7 +198,14 @@ int main(int argc, char *argv[])
 		}
 		++i;
 	}
-	omp_set_num_threads(num_threads);
+	if(num_threads == -1 && !operation_args.nothreading){
+		fprintf(stderr,"No number of threads provided\nUsing default num_threads: 2\n");
+		num_threads = 2;
+	}
+	else
+		omp_set_num_threads(num_threads);
+	if(num_threads != -1 && operation_args.nothreading)
+		fprintf(stderr, "Warning: number of threads specified while using --nothreading flag\n");
 	//check that the right number of files were provided
 	switch(operation_args.operation){
 	case SCAL_MUL:
