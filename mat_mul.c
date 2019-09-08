@@ -101,7 +101,7 @@ mat_rv matrix_multiply_coo(coo matrix1, coo matrix2)
 	return rv;
 }
 
-mat_rv matrix_multiply(FILE* file1, FILE* file2, FORMAT format)
+mat_rv matrix_multiply(FILE* file1, FILE* file2, FORMAT format, bool nothreading)
 {
 	mat_rv rv;
 	switch(format){

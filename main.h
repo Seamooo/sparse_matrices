@@ -42,7 +42,7 @@
 #define p() printf("got here\n"); fflush(stdout);
 #define pstr(x) printf("%s = %s\n",#x,x); fflush(stdout);
 #define pint(x) printf("%s = %d\n",#x,x); fflush(stdout);
-#define phex(x) for(int i = 0; x[i] != '\0'; ++i){printf("%02x ", x[i]);} printf("\n"); fflush(stdout); 
+#define phex(x) for(int i = 0; x[i] != '\0'; ++i){printf("%02x ", x[i]);} printf("\n"); fflush(stdout);
 
 typedef enum {
 	NO_OPERATION,
@@ -161,18 +161,27 @@ typedef struct{
 		int *i;
 	} vals;
 } mat_rv;
+
+typedef struct{
+	FILE *file1;
+	FILE *file2;
+	OPERATION operation;
+	FORMAT format;
+	float scalar;
+	bool nothreading;
+} OPERATIONARGS;
 //handle sks later
 //main function externs
 extern char *readline(FILE *);
-extern mat_rv execute_operation(FILE*, FILE*, OPERATION, FORMAT, float);
+extern mat_rv execute_operation(OPERATIONARGS);
 extern void create_log_file(struct timespec, OPERATION, int, char *, char *, int, mat_rv);
 
 //operation functions
-extern mat_rv scalar_multiply(FILE*, FORMAT, float);
-extern mat_rv trace(FILE*, FORMAT);
-extern mat_rv addition(FILE*, FILE*, FORMAT);
-extern mat_rv transpose(FILE*, FORMAT);
-extern mat_rv matrix_multiply(FILE*, FILE*, FORMAT);
+extern mat_rv scalar_multiply(FILE*, FORMAT, float, bool);
+extern mat_rv trace(FILE*, FORMAT, bool);
+extern mat_rv addition(FILE*, FILE*, FORMAT, bool);
+extern mat_rv transpose(FILE*, FORMAT, bool);
+extern mat_rv matrix_multiply(FILE*, FILE*, FORMAT, bool);
 
 //free mat functions
 extern void free_coo(coo);

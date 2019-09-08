@@ -2,9 +2,8 @@
 
 //TODO:
 //bug with strtoimax where extremely large values return -1
-//add naive flag
-//add silence output flag
 //create threaded functions
+//add logging for trace return val
 
 //notes:
 //not freeing memory before exitting as OS should release allocated memory on exit
@@ -14,12 +13,14 @@ int main(int argc, char *argv[])
 {
 	struct timespec call_time;
 	get_utc_time(&call_time);
-	float scalar;
 	int numfiles = 0;
-	OPERATION operation = NO_OPERATION;
-	FORMAT format = FORM_DEFAULT;
+	OPERATIONARGS operation_args;
+	operation_args.operation = NO_OPERATION;
+	operation_args.format = FORM_DEFAULT;
+	operation_args.nothreading = false;
 	int num_threads = 2;
 	bool logging = false;
+	bool silence = false;
 	char *filename1 = NULL;
 	char *filename2 = NULL;
 	//parse command line args
@@ -86,23 +87,26 @@ int main(int argc, char *argv[])
 			}
 			else if(strncmp("-l",argv[i], 2*sizeof(char)) == 0)
 				logging = true;
+			else if(strncmp("-s",argv[i], 2*sizeof(char)) == 0)
+				silence = true;
 			else{
 				fprintf(stderr, "unkown option: %s\n", argv[i]);
+				exit(EXIT_FAILURE);
 			}
 			break;
 		case 4:{
-			bool isset = (operation != NO_OPERATION);
+			bool isset = (operation_args.operation != NO_OPERATION);
 			if(strncmp("--sc",argv[i], 4 * sizeof(char)) == 0){
-				operation = SCAL_MUL;
+				operation_args.operation = SCAL_MUL;
 				++i;
-				scalar = strtof(argv[i],NULL);
-				if(scalar == 0.0){
+				operation_args.scalar = strtof(argv[i],NULL);
+				if(operation_args.scalar == 0.0){
 					if(errno == ERANGE){
 						fprintf(stderr, "Element %s outside of range of specification\n", argv[i]);
 						exit(EXIT_FAILURE);
 					}
 				}
-				else if (scalar == HUGE_VALF || scalar == (-1)*HUGE_VALF){
+				else if (operation_args.scalar == HUGE_VALF || operation_args.scalar == (-1)*HUGE_VALF){
 					if(errno == ERANGE){
 						fprintf(stderr, "Element %s outside of range of specification\n", argv[i]);
 						exit(EXIT_FAILURE);
@@ -110,13 +114,13 @@ int main(int argc, char *argv[])
 				}
 			}
 			else if(strncmp("--tr",argv[i], 4 * sizeof(char)) == 0)
-				operation = TRACE;
+				operation_args.operation = TRACE;
 			else if(strncmp("--ad",argv[i], 4 * sizeof(char)) == 0)
-				operation = ADD;
+				operation_args.operation = ADD;
 			else if(strncmp("--ts",argv[i], 4 * sizeof(char)) == 0)
-				operation = TRANSPOSE;
+				operation_args.operation = TRANSPOSE;
 			else if(strncmp("--mm",argv[i], 4 * sizeof(char)) == 0)
-				operation = MAT_MUL;
+				operation_args.operation = MAT_MUL;
 			else{
 				fprintf(stderr, "unrecognised operation: %s\n",argv[i]);
 				exit(EXIT_FAILURE);
@@ -142,20 +146,20 @@ int main(int argc, char *argv[])
 				switch(strlen(argv[i])){
 				case 3:
 					if(strncmp("COO",argv[i], 3 * sizeof(char)) == 0){
-						format = COO;
+						operation_args.format = COO;
 					}
 					else if(strncmp("CSR",argv[i],3 * sizeof(char)) == 0)
-						format = CSR;
+						operation_args.format = CSR;
 					else if(strncmp("CSC",argv[i],3 * sizeof(char)) == 0)
-						format = CSR;
+						operation_args.format = CSR;
 					else if(strncmp("CSR",argv[i],3 * sizeof(char)) == 0)
-						format = CSR;
+						operation_args.format = CSR;
 					else if(strncmp("CDS",argv[i],3 * sizeof(char)) == 0)
-						format = CDS;
+						operation_args.format = CDS;
 					else if(strncmp("JDS",argv[i],3 * sizeof(char)) == 0)
-						format = JDS;
+						operation_args.format = JDS;
 					else if(strncmp("SKS",argv[i],3 * sizeof(char)) == 0)
-						format = SKS;
+						operation_args.format = SKS;
 					else{
 						fprintf(stderr, "unrecognised format: %s\n",argv[i]);
 						exit(EXIT_FAILURE);
@@ -163,7 +167,7 @@ int main(int argc, char *argv[])
 					break;
 				case 4:
 					if(strncmp("BCSR",argv[i],4 * sizeof(char)) == 0)
-						format = BCSR;
+						operation_args.format = BCSR;
 					else{
 						fprintf(stderr, "unrecognised format: %s\n",argv[i]);
 						exit(EXIT_FAILURE);
@@ -174,6 +178,18 @@ int main(int argc, char *argv[])
 					exit(EXIT_FAILURE);
 				}
 			}
+			else{
+				fprintf(stderr, "unknown option %s\n", argv[i]);
+				exit(EXIT_FAILURE);
+			}
+			break;
+		case 13:
+			if(strncmp("--nothreading",argv[i],13 * sizeof(char)) == 0)
+				operation_args.nothreading = true;
+			else{
+				fprintf(stderr, "unknown option %s\n", argv[i]);
+				exit(EXIT_FAILURE);
+			}
 			break;
 		default:
 			fprintf(stderr,"unknown option: %s\n", argv[i]);
@@ -183,10 +199,10 @@ int main(int argc, char *argv[])
 	}
 	omp_set_num_threads(num_threads);
 	//check that the right number of files were provided
-	switch(operation){
+	switch(operation_args.operation){
 	case SCAL_MUL:
 		if(numfiles != 1){
-			fprintf(stderr, "Scalar multiplication requires exactly 1 input matrix\n");
+			fprintf(stderr, "scalar multiplication requires exactly 1 input matrix\n");
 			exit(EXIT_FAILURE);
 		}
 		break;
@@ -217,21 +233,21 @@ int main(int argc, char *argv[])
 	default:
 		break;
 	}
-	FILE *file1 = NULL;
-	FILE *file2 = NULL;
+	operation_args.file1 = NULL;
+	operation_args.file2 = NULL;
 	if(numfiles > 0){
-		if(!(file1 = fopen(filename1,"rb"))){
+		if(!(operation_args.file1 = fopen(filename1,"rb"))){
 			fprintf(stderr, "File %s couldn't be opened\n", filename1);
 			exit(EXIT_FAILURE);
 		}
 	}
 	if(numfiles > 1){
-		if(!(file2 = fopen(filename2,"rb"))){
+		if(!(operation_args.file2 = fopen(filename2,"rb"))){
 			fprintf(stderr, "File %s couldn't be opened\n", filename2);
 			exit(EXIT_FAILURE);
 		}
 	}
-	mat_rv result = execute_operation(file1, file2, operation, format, scalar);
+	mat_rv result = execute_operation(operation_args);
 	switch(result.error){
 	case ERR_CONSTRUCTION:
 		fprintf(stderr, "Internal Error constructing result matrix from sparse matrix\n");
@@ -265,11 +281,12 @@ int main(int argc, char *argv[])
 		break;
 	}
 	if(numfiles > 0)
-		fclose(file1);
+		fclose(operation_args.file1);
 	if(numfiles > 1)
-		fclose(file2);
+		fclose(operation_args.file2);
 	if(logging){
-		create_log_file(call_time, operation, numfiles, filename1, filename2, num_threads, result);
+		create_log_file(call_time, operation_args.operation, numfiles, filename1, filename2, num_threads, result);
 	}
-	print_mat_rv(result);
+	if(!silence)
+		print_mat_rv(result);
 }

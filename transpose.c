@@ -20,7 +20,7 @@ mat_rv transpose_coo(coo matrix)
 	return rv;
 }
 
-mat_rv transpose(FILE* file, FORMAT format)
+mat_rv transpose(FILE* file, FORMAT format, bool nothreading)
 {
 	mat_rv rv;
 	switch(format){

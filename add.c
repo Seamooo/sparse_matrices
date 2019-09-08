@@ -83,7 +83,7 @@ mat_rv addition_coo(coo matrix1, coo matrix2)
 	return rv;
 }
 
-mat_rv addition(FILE* file1, FILE* file2, FORMAT format)
+mat_rv addition(FILE* file1, FILE* file2, FORMAT format, bool nothreading)
 {
 	mat_rv rv;
 	//not error checking type or format in this function

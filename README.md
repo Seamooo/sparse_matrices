@@ -25,7 +25,8 @@ specify format:
 `--format <[COO,CSR,... etc]>`
 run with no threading
 `--nothreading`
-
+Run with silenced output
+`-s`
 
 if time permits this is the full list of formats I would want to implement:
 BCCS Block Compressed Column Storage format

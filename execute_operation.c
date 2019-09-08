@@ -1,34 +1,34 @@
 #include "main.h"
 
-mat_rv execute_operation(FILE *file1, FILE *file2, OPERATION operation, FORMAT format, float scalar){
+mat_rv execute_operation(OPERATIONARGS args){
 
-	switch(operation){
+	switch(args.operation){
 	case SCAL_MUL:
 		//set defaults
 		//change after extensive testing for optimal
-		if(format == FORM_DEFAULT)
-			format = COO;
-		return scalar_multiply(file1, format, scalar);
+		if(args.format == FORM_DEFAULT)
+			args.format = COO;
+		return scalar_multiply(args.file1, args.format, args.scalar, args.nothreading);
 		break;
 	case TRACE:
-		if(format == FORM_DEFAULT)
-			format = COO;
-		return trace(file1, format);
+		if(args.format == FORM_DEFAULT)
+			args.format = COO;
+		return trace(args.file1, args.format, args.nothreading);
 		break;
 	case ADD:
-		if(format == FORM_DEFAULT)
-			format = COO;
-		return addition(file1, file2, format);
+		if(args.format == FORM_DEFAULT)
+			args.format = COO;
+		return addition(args.file1, args.file2, args.format, args.nothreading);
 		break;
 	case TRANSPOSE:
-		if(format == FORM_DEFAULT)
-			format = COO;
-		return transpose(file1, format);
+		if(args.format == FORM_DEFAULT)
+			args.format = COO;
+		return transpose(args.file1, args.format, args.nothreading);
 		break;
 	case MAT_MUL:
-		if(format == FORM_DEFAULT)
-			format = COO;
-		return matrix_multiply(file1, file2, format);
+		if(args.format == FORM_DEFAULT)
+			args.format = COO;
+		return matrix_multiply(args.file1, args.file2, args.format, args.nothreading);
 		break;
 	default:
 		fprintf(stderr, "Internal error selecting operation\n");

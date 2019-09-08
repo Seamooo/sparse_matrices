@@ -18,7 +18,7 @@ mat_rv scalar_multiply_coo(coo matrix, float scalar)
 	return rv;
 }
 
-mat_rv scalar_multiply(FILE* file, FORMAT format, float scalar)
+mat_rv scalar_multiply(FILE* file, FORMAT format, float scalar, bool nothreading)
 {
 	mat_rv rv;
 	//not error checking type or format in this function
