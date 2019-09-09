@@ -26,8 +26,10 @@ void print_mat_rv(mat_rv matrix)
 
 void print_coo(coo matrix)
 {
+	printf("type: %s\n", (matrix.type == MAT_INT) ? "int" : "float");
 	printf("rows: %d\n", matrix.rows);
 	printf("cols: %d\n", matrix.cols);
+	printf("length: %d\n", matrix.length);
 	printf("[");
 	for(int i = 0; i < matrix.length; ++i){
 		if(matrix.elems[i].type == MAT_INT)

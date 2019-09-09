@@ -56,7 +56,6 @@ mat_rv scalar_multiply(FILE* file, FORMAT format, float scalar, bool nothreading
 			rv = scalar_multiply_coo_nothreading(matrix, scalar);
 		else
 			rv = scalar_multiply_coo(matrix, scalar);
-		rv = scalar_multiply_coo(matrix, scalar);
 		rv.t_construct = time_sum(rv.t_construct, delta);
 		free_coo(matrix);
 		return rv;

@@ -4,7 +4,6 @@
 //bug with strtoimax where extremely large values return -1
 //create threaded functions
 //revise mat_rv struct to contain bool for isval
-//scalar_mul gives wrong values (floating point interaction)
 
 //notes:
 //not freeing memory before exitting as OS should release allocated memory on exit
@@ -204,6 +203,10 @@ int main(int argc, char *argv[])
 	}
 	if(num_threads != -1 && operation_args.nothreading)
 		fprintf(stderr, "Warning: number of threads specified while using --nothreading flag\n");
+	if(operation_args.nothreading)
+		num_threads = 1;
+	else
+		omp_set_num_threads(num_threads);
 	//check that the right number of files were provided
 	switch(operation_args.operation){
 	case SCAL_MUL:
