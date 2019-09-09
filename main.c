@@ -3,8 +3,8 @@
 //TODO:
 //bug with strtoimax where extremely large values return -1
 //create threaded functions
-//add logging for trace return val
-//bug with scalar multiply logging non-float
+//revise mat_rv struct to contain bool for isval
+//scalar_mul gives wrong values (floating point interaction)
 
 //notes:
 //not freeing memory before exitting as OS should release allocated memory on exit
@@ -202,8 +202,6 @@ int main(int argc, char *argv[])
 		fprintf(stderr,"No number of threads provided\nUsing default num_threads: 2\n");
 		num_threads = 2;
 	}
-	else
-		omp_set_num_threads(num_threads);
 	if(num_threads != -1 && operation_args.nothreading)
 		fprintf(stderr, "Warning: number of threads specified while using --nothreading flag\n");
 	//check that the right number of files were provided
@@ -293,7 +291,15 @@ int main(int argc, char *argv[])
 	if(numfiles > 1)
 		fclose(operation_args.file2);
 	if(logging){
-		create_log_file(call_time, operation_args.operation, numfiles, filename1, filename2, num_threads, result);
+		create_log_file(
+			call_time,
+			operation_args.operation,
+			numfiles,
+			filename1,
+			filename2,
+			num_threads,
+			operation_args.operation == TRACE,
+			result);
 	}
 	if(!silence)
 		print_mat_rv(result);

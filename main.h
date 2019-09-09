@@ -174,7 +174,7 @@ typedef struct{
 //main function externs
 extern char *readline(FILE *);
 extern mat_rv execute_operation(OPERATIONARGS);
-extern void create_log_file(struct timespec, OPERATION, int, char *, char *, int, mat_rv);
+extern void create_log_file(struct timespec, OPERATION, int, char *, char *, int, bool, mat_rv);
 
 //operation functions
 extern mat_rv scalar_multiply(FILE*, FORMAT, float, bool);

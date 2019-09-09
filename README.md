@@ -12,12 +12,12 @@ open make.bat
 
 supported sparse matrix formats:
 Coordinate Format (COO)
-Compressed Sparse Row (CSR)
-Compressed Sparse Columb (CSC)
-Block Compressed Row Storage (BCRS)
-Compressed Diagonal Storage (CDS)
-Jagged Diagonal Storage (JDS)
-Skyline Storage (SKS)
+Compressed Sparse Row (CSR) --not implemented
+Compressed Sparse Columb (CSC) --not implemented
+Block Compressed Row Storage (BCRS) --not implemented
+Compressed Diagonal Storage (CDS) --not implemented
+Jagged Diagonal Storage (JDS) --not implemented
+Skyline Storage (SKS) --not implemented
 
 Additional Flags
 ----------------

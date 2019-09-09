@@ -26,7 +26,7 @@ mat_rv scalar_multiply_coo(coo matrix, float scalar)
 	struct timespec start, end;
 	int i;
 	get_cpu_time(&start);
-	#pragma omp parallel for private(i) shared(rv, matrix)
+	#pragma omp parallel for private(i) shared(rv, matrix, scalar)
 	for(i = 0; i < matrix.length; ++i){
 		if(matrix.type == MAT_INT)
 			matrix.elems[i].val.f = (float)matrix.elems[i].val.i * scalar;

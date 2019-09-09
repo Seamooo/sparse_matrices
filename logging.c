@@ -57,7 +57,7 @@ char *epoch_to_date(struct timespec time)
 	return rv;
 }
 
-void create_log_file(struct timespec call_time, OPERATION operation, int numfiles, char *filename1, char *filename2, int num_threads, mat_rv result)
+void create_log_file(struct timespec call_time, OPERATION operation, int numfiles, char *filename1, char *filename2, int num_threads, bool isval, mat_rv result)
 {
 	char logfilename[40] = "21727809_";
 	char *date = epoch_to_date(call_time);
@@ -156,35 +156,42 @@ void create_log_file(struct timespec call_time, OPERATION operation, int numfile
 		fputs("\r\n",logfp);
 	else
 		fputc('\n',logfp);
-	if(mat_rv.type == MAT_INT)
-		fputs("int",logfp);
-	else
-		fputs("float",logfp);
-	if(system == WINDOWS)
-		fputs("\r\n",logfp);
-	else
-		fputc('\n',logfp);
-	//check for matrix vs single val goes here
-	fprintf(logfp,"%d",result.rows);
-	if(system == WINDOWS)
-		fputs("\r\n",logfp);
-	else
-		fputc('\n',logfp);
-	fprintf(logfp,"%d",result.cols);
-	if(system == WINDOWS)
-		fputs("\r\n",logfp);
-	else
-		fputc('\n',logfp);
-	for(int i = 0; i < result.rows; ++i){
-		for(int j = 0; j < result.cols; ++j){
-			if(result.type == MAT_INT)
-				fprintf(logfp,"%d",result.vals.i[i*result.cols + j]);
-			else
-				fprintf(logfp,"%f",result.vals.f[i*result.cols + j]);
-			if(i == result.rows - 1 && j == result.cols - 1){
-				break;
+	if(isval){
+		if(result.type == MAT_INT)
+			fprintf(logfp,"%d",result.vals.i[0]);
+		else
+			fprintf(logfp,"%f",result.vals.f[0]);
+	}
+	else{
+		if(result.type == MAT_INT)
+			fputs("int",logfp);
+		else
+			fputs("float",logfp);
+		if(system == WINDOWS)
+			fputs("\r\n",logfp);
+		else
+			fputc('\n',logfp);
+		fprintf(logfp,"%d",result.rows);
+		if(system == WINDOWS)
+			fputs("\r\n",logfp);
+		else
+			fputc('\n',logfp);
+		fprintf(logfp,"%d",result.cols);
+		if(system == WINDOWS)
+			fputs("\r\n",logfp);
+		else
+			fputc('\n',logfp);
+		for(int i = 0; i < result.rows; ++i){
+			for(int j = 0; j < result.cols; ++j){
+				if(result.type == MAT_INT)
+					fprintf(logfp,"%d",result.vals.i[i*result.cols + j]);
+				else
+					fprintf(logfp,"%f",result.vals.f[i*result.cols + j]);
+				if(i == result.rows - 1 && j == result.cols - 1){
+					break;
+				}
+				fputc(' ', logfp);
 			}
-			fputc(' ', logfp);
 		}
 	}
 	if(system == WINDOWS)

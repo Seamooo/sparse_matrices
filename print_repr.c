@@ -10,7 +10,7 @@ void print_mat_rv(mat_rv matrix)
 			if(matrix.type == MAT_INT)
 				printf("%d",matrix.vals.i[i*matrix.cols+j]);
 			else
-				printf("%.02f",matrix.vals.f[i*matrix.cols+j]);
+				printf("%f",matrix.vals.f[i*matrix.cols+j]);
 			if(j < matrix.cols - 1){
 				printf(", ");
 			}
@@ -20,6 +20,8 @@ void print_mat_rv(mat_rv matrix)
 			printf(",\n");
 	}
 	printf("]\n");
+	printf("Time to construct to format & convert from format: %Lfs\n", (long double)matrix.t_construct.tv_sec + (long double)matrix.t_construct.tv_nsec / 1E9);
+	printf("Time to process: %Lfs\n", (long double)matrix.t_process.tv_sec + (long double)matrix.t_process.tv_nsec / 1E9);
 }
 
 void print_coo(coo matrix)
