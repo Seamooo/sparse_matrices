@@ -41,3 +41,67 @@ void print_coo(coo matrix)
 	}
 	printf("]\n");
 }
+
+void print_csr(csr matrix)
+{
+	printf("type: %s\n", (matrix.type == MAT_INT) ? "int" : "float");
+	printf("rows: %d\n", matrix.rows);
+	printf("cols: %d\n", matrix.cols);
+	printf("num_vals: %d\n", matrix.num_vals);
+	printf("nnz: [");
+	for(int i = 0; i < matrix.num_vals; ++i){
+		if(matrix.type == MAT_INT)
+			printf("%d",matrix.nnz.i[i]);
+		else
+			printf("%f",matrix.nnz.f[i]);
+		if(i < matrix.num_vals - 1)
+			printf(", ");
+	}
+	printf("]\n");
+	printf("ia: [");
+	for(int i = 0; i < matrix.rows + 1; ++i){
+		printf("%d", matrix.ia[i]);
+		if(i < matrix.rows)
+			printf(", ");
+	}
+	printf("]\n");
+	printf("ja: [");
+	for(int i = 0; i < matrix.num_vals; ++i){
+		printf("%d", matrix.ja[i]);
+		if(i < matrix.num_vals - 1)
+			printf(", ");
+	}
+	printf("]\n");
+}
+
+void print_csc(csc matrix)
+{
+	printf("type: %s\n", (matrix.type == MAT_INT) ? "int" : "float");
+	printf("rows: %d\n", matrix.rows);
+	printf("cols: %d\n", matrix.cols);
+	printf("num_vals: %d\n", matrix.num_vals);
+	printf("nnz: [");
+	for(int i = 0; i < matrix.num_vals; ++i){
+		if(matrix.type == MAT_INT)
+			printf("%d",matrix.nnz.i[i]);
+		else
+			printf("%f",matrix.nnz.f[i]);
+		if(i < matrix.num_vals - 1)
+			printf(", ");
+	}
+	printf("]\n");
+	printf("ia: [");
+	for(int i = 0; i < matrix.rows + 1; ++i){
+		printf("%d", matrix.ia[i]);
+		if(i < matrix.rows)
+			printf(", ");
+	}
+	printf("]\n");
+	printf("ja: [");
+	for(int i = 0; i < matrix.num_vals; ++i){
+		printf("%d", matrix.ja[i]);
+		if(i < matrix.num_vals - 1)
+			printf(", ");
+	}
+	printf("]\n");
+}

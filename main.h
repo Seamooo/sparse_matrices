@@ -102,15 +102,19 @@ typedef struct{
 } coo;
 typedef struct {
 	MAT_TYPE type;
+	//store rows and cols to reconstruct matrix more easily
+	int rows;
+	int cols;
 	int num_vals;
 	union{
 		float *f;
 		int *i;
 	} nnz;
 	int *ja;
-	int ia_len;
+	//not storing ialength as ia_len == rows + 1
 	int *ia;
 } csr;
+//ia_len == cols + 1 for below
 typedef csr csc;
 typedef struct {
 	MAT_TYPE type;
@@ -188,6 +192,8 @@ extern void free_coo(coo);
 
 //read mat functions
 extern coo read_coo(FILE*);
+extern csr read_csr(FILE*);
+extern csc read_csc(FILE*);
 
 //conversion functions
 extern mat_rv coo_to_mat(coo);
@@ -205,5 +211,7 @@ extern struct timespec time_sum(struct timespec, struct timespec);
 //print functions for debug
 extern void print_mat_rv(mat_rv);
 extern void print_coo(coo);
+extern void print_csr(csr);
+extern void print_csc(csc);
 #endif
 

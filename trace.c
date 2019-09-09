@@ -82,6 +82,7 @@ mat_rv trace_coo(coo matrix)
 	return rv;
 }
 
+//using trace to buikd every format initially
 mat_rv trace(FILE* file, FORMAT format, bool nothreading)
 {
 	mat_rv rv;
@@ -100,6 +101,36 @@ mat_rv trace(FILE* file, FORMAT format, bool nothreading)
 		free_coo(matrix);
 		return rv;
 		break;
+	}
+	case CSR:{
+		struct timespec start, end;
+		get_cpu_time(&start);
+		csr matrix = read_csr(file);
+		get_cpu_time(&end);
+		//struct timespec delta = time_delta(end, start);
+		print_csr(matrix);
+		fprintf(stderr, "operation not implemented\n");
+		exit(EXIT_FAILURE);
+	}
+	case CSC:{
+		struct timespec start, end;
+		get_cpu_time(&start);
+		csc matrix = read_csc(file);
+		get_cpu_time(&end);
+		//struct timespec delta = time_delta(end, start);
+		print_csc(matrix);
+		fprintf(stderr, "operation not implemented\n");
+		exit(EXIT_FAILURE);
+	}
+	case BCSR:{
+		struct timespec start, end;
+		get_cpu_time(&start);
+		bcsr matrix = read_bcsr(file);
+		get_cpu_time(&end);
+		//struct timespec delta = time_delta(end, start);
+		print_bcsr(matrix);
+		fprintf(stderr, "operation not implemented\n");
+		exit(EXIT_FAILURE);
 	}
 	default:
 		fprintf(stderr, "format not implemented\n");

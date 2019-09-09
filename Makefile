@@ -3,7 +3,7 @@ CFILES = free_mat.c execute_operation.c readline.c read_mat.c scalar_multiply.c 
 HFILES = main.h
 GCC_CMD = gcc-7
 
-out.bin:$(CFILES) $(HFILES)
+sparse_matrix.bin:$(CFILES) $(HFILES)
 	$(GCC_CMD) $(GCCPARAMS) -o $@ $(CFILES)
 
 debug.bin:$(CFILES) $(HFILES)

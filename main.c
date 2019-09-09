@@ -1,9 +1,10 @@
 #include "main.h"
 
 //TODO:
-//bug with strtoimax where extremely large values return -1
+//bug/misunderstood implementation with strtoimax where extremely large values return -1
 //create threaded functions
 //revise mat_rv struct to contain bool for isval
+//add help flag and ability to display help page when no args given
 
 //notes:
 //not freeing memory before exitting as OS should release allocated memory on exit

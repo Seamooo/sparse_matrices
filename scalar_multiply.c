@@ -19,7 +19,7 @@ mat_rv scalar_multiply_coo_nothreading(coo matrix, float scalar)
 	return rv;
 }
 
-//no speedup at this stage
+//slow down at this stages
 mat_rv scalar_multiply_coo(coo matrix, float scalar)
 {
 	mat_rv rv;
