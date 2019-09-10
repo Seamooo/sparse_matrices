@@ -42,17 +42,17 @@ mat_rv transpose_coo(coo matrix)
 	return rv;
 }
 
-mat_rv transpose(FILE* file, FORMAT format, bool nothreading)
+mat_rv transpose(OPERATIONARGS args)
 {
 	mat_rv rv;
-	switch(format){
+	switch(args.format){
 	case COO:{
 		struct timespec start, end;
 		get_cpu_time(&start);
-		coo matrix = read_coo(file);
+		coo matrix = read_coo(args.file1);
 		get_cpu_time(&end);
 		struct timespec delta = time_delta(end, start);
-		if(nothreading)
+		if(args.nothreading)
 			rv = transpose_coo_nothreading(matrix);
 		else
 			rv = transpose_coo(matrix);

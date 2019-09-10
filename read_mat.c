@@ -385,8 +385,19 @@ csc read_csc(FILE *file)
 	return rv;
 }
 
-bcsr read_bcsr(FILE *file)
+bcsr read_bcsr(FILE *file, int block_size)
 {
 	bcsr rv;
+	rv.type = get_type(file);
+	rv.rows = read_dim(file);
+	rv.cols = read_dim(file);
+	rv.block_size = block_size;
+	rv.num_blocks = 0;
+	int size = MALLOCINIT;
+	if(!(rv.blocks = (bcsr_nnzb*)malloc(size * sizeof(bcsr_nnzb)))){
+		fprintf(stderr, "Ran out of virtual memory when allocating bcsr struct\n");
+		exit(EXIT_FAILURE);
+	}
+
 	return rv;
 }

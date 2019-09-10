@@ -12,22 +12,22 @@ startmake.bat
 
 Usage
 -----
-`./sparse_matrix.bin <--tr | --ad | ...> -f [file1] [file2]`
+`./sparse_matrix.[bin | exe] <--tr | --ad | ...> -f <file1> [file2]`
 
 Additional Flags
 ----------------
 `-t` specify number of threads  
 `-l` log output  
 `--format <COO | CSR | ...> [BCSR BLOCK SIZE]` specify matrix format  
-`--nothreading` run with no threading  
+`--nothreading` run with no threading 
 `-s` run with silenced output  
 
 
 Supported sparse matrix formats
 -------------------------------
 Coordinate Format (COO)  
-Compressed Sparse Row (CSR) --not implemented  
-Compressed Sparse Columb (CSC) --not implemented  
+Compressed Sparse Row (CSR) 
+Compressed Sparse Column (CSC)  
 Block Compressed Row Storage (BCRS) --not implemented  
 Compressed Diagonal Storage (CDS) --not implemented  
 Jagged Diagonal Storage (JDS) --not implemented  
@@ -57,4 +57,6 @@ VBR  Variable Block Row format
   
 Resources:
 ----------
-[sciencedirect.com/topics/computer-science/sparse-matrix-computation](sciencedirect.com/topics/computer-science/sparse-matrix-computation)
+[sciencedirect.com/topics/computer-science/sparse-matrix-computation](sciencedirect.com/topics/computer-science/sparse-matrix-computation)  
+[https://inf.ethz.ch/personal/markusp/teaching/263-2300-ETH-spring11/slides/class15.pdf](https://inf.ethz.ch/personal/markusp/teaching/263-2300-ETH-spring11/slides/class15.pdf)  
+[https://peerj.com/articles/cs-151.pdf](https://peerj.com/articles/cs-151.pdf)

@@ -127,12 +127,17 @@ typedef struct {
 	} val;
 } bcsr_nnzb;
 typedef struct {
+	//store rows and columbns for easier reconstruction
+	int rows;
+	int cols;
+	//store type to handle 0 elem case
+	MAT_TYPE type;
 	int num_blocks;
 	int block_size;
 	bcsr_nnzb *blocks;
-	bcsr_nnzb **entries;
-	int cols_len;
-	int *cols;
+	int *entries;
+	int cols_arr_len;
+	int *cols_arr;
 } bcsr;
 typedef struct {
 	MAT_TYPE type;
@@ -158,6 +163,7 @@ typedef struct{
 	RV_ERROR error;
 	struct timespec t_construct;
 	struct timespec t_process;
+	bool isval;
 	int rows;
 	int cols;
 	union{
@@ -173,19 +179,20 @@ typedef struct{
 	FORMAT format;
 	float scalar;
 	bool nothreading;
+	int block_size;
 } OPERATIONARGS;
 //handle sks later
 //main function externs
 extern char *readline(FILE *);
 extern mat_rv execute_operation(OPERATIONARGS);
-extern void create_log_file(struct timespec, OPERATION, int, char *, char *, int, bool, mat_rv);
+extern void create_log_file(struct timespec, OPERATION, int, char *, char *, int, mat_rv);
 
 //operation functions
-extern mat_rv scalar_multiply(FILE*, FORMAT, float, bool);
-extern mat_rv trace(FILE*, FORMAT, bool);
-extern mat_rv addition(FILE*, FILE*, FORMAT, bool);
-extern mat_rv transpose(FILE*, FORMAT, bool);
-extern mat_rv matrix_multiply(FILE*, FILE*, FORMAT, bool);
+extern mat_rv scalar_multiply(OPERATIONARGS);
+extern mat_rv trace(OPERATIONARGS);
+extern mat_rv addition(OPERATIONARGS);
+extern mat_rv transpose(OPERATIONARGS);
+extern mat_rv matrix_multiply(OPERATIONARGS);
 
 //free mat functions
 extern void free_coo(coo);
@@ -194,6 +201,7 @@ extern void free_coo(coo);
 extern coo read_coo(FILE*);
 extern csr read_csr(FILE*);
 extern csc read_csc(FILE*);
+extern bcsr read_bcsr(FILE*, int);
 
 //conversion functions
 extern mat_rv coo_to_mat(coo);
@@ -213,5 +221,6 @@ extern void print_mat_rv(mat_rv);
 extern void print_coo(coo);
 extern void print_csr(csr);
 extern void print_csc(csc);
+extern void print_bcsr(bcsr);
 #endif
 

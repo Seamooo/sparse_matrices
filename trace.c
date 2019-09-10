@@ -83,29 +83,30 @@ mat_rv trace_coo(coo matrix)
 }
 
 //using trace to buikd every format initially
-mat_rv trace(FILE* file, FORMAT format, bool nothreading)
+mat_rv trace(OPERATIONARGS args)
 {
 	mat_rv rv;
-	switch(format){
+	switch(args.format){
 	case COO:{
 		struct timespec start, end;
 		get_cpu_time(&start);
-		coo matrix = read_coo(file);
+		coo matrix = read_coo(args.file1);
 		get_cpu_time(&end);
 		struct timespec delta = time_delta(end, start);
-		if(nothreading)
+		if(args.nothreading)
 			rv = trace_coo_nothreading(matrix);
 		else
 			rv = trace_coo(matrix);
 		rv.t_construct = time_sum(rv.t_construct, delta);
 		free_coo(matrix);
+		rv.isval = true;
 		return rv;
 		break;
 	}
 	case CSR:{
 		struct timespec start, end;
 		get_cpu_time(&start);
-		csr matrix = read_csr(file);
+		csr matrix = read_csr(args.file1);
 		get_cpu_time(&end);
 		//struct timespec delta = time_delta(end, start);
 		print_csr(matrix);
@@ -115,7 +116,7 @@ mat_rv trace(FILE* file, FORMAT format, bool nothreading)
 	case CSC:{
 		struct timespec start, end;
 		get_cpu_time(&start);
-		csc matrix = read_csc(file);
+		csc matrix = read_csc(args.file1);
 		get_cpu_time(&end);
 		//struct timespec delta = time_delta(end, start);
 		print_csc(matrix);
@@ -125,7 +126,7 @@ mat_rv trace(FILE* file, FORMAT format, bool nothreading)
 	case BCSR:{
 		struct timespec start, end;
 		get_cpu_time(&start);
-		bcsr matrix = read_bcsr(file);
+		bcsr matrix = read_bcsr(args.file1, args.block_size);
 		get_cpu_time(&end);
 		//struct timespec delta = time_delta(end, start);
 		print_bcsr(matrix);

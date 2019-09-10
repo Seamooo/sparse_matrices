@@ -105,3 +105,8 @@ void print_csc(csc matrix)
 	}
 	printf("]\n");
 }
+
+void print_bcsr(bcsr matrix)
+{
+
+}

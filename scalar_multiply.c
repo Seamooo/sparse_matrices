@@ -41,21 +41,21 @@ mat_rv scalar_multiply_coo(coo matrix, float scalar)
 	return rv;
 }
 
-mat_rv scalar_multiply(FILE* file, FORMAT format, float scalar, bool nothreading)
+mat_rv scalar_multiply(OPERATIONARGS args)
 {
 	mat_rv rv;
 	//not error checking type or format in this function
-	switch(format){
+	switch(args.format){
 	case COO:{
 		struct timespec start, end;
 		get_cpu_time(&start);
-		coo matrix = read_coo(file);
+		coo matrix = read_coo(args.file1);
 		get_cpu_time(&end);
 		struct timespec delta = time_delta(end, start);
-		if(nothreading)
-			rv = scalar_multiply_coo_nothreading(matrix, scalar);
+		if(args.nothreading)
+			rv = scalar_multiply_coo_nothreading(matrix, args.scalar);
 		else
-			rv = scalar_multiply_coo(matrix, scalar);
+			rv = scalar_multiply_coo(matrix, args.scalar);
 		rv.t_construct = time_sum(rv.t_construct, delta);
 		free_coo(matrix);
 		return rv;

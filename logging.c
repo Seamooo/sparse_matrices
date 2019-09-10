@@ -57,7 +57,7 @@ char *epoch_to_date(struct timespec time)
 	return rv;
 }
 
-void create_log_file(struct timespec call_time, OPERATION operation, int numfiles, char *filename1, char *filename2, int num_threads, bool isval, mat_rv result)
+void create_log_file(struct timespec call_time, OPERATION operation, int numfiles, char *filename1, char *filename2, int num_threads, mat_rv result)
 {
 	char logfilename[40] = "21727809_";
 	char *date = epoch_to_date(call_time);
@@ -156,7 +156,7 @@ void create_log_file(struct timespec call_time, OPERATION operation, int numfile
 		fputs("\r\n",logfp);
 	else
 		fputc('\n',logfp);
-	if(isval){
+	if(result.isval){
 		if(result.type == MAT_INT)
 			fprintf(logfp,"%d",result.vals.i[0]);
 		else

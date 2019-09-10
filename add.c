@@ -166,19 +166,19 @@ mat_rv addition_coo(coo matrix1, coo matrix2)
 	return rv;
 }
 
-mat_rv addition(FILE* file1, FILE* file2, FORMAT format, bool nothreading)
+mat_rv addition(OPERATIONARGS args)
 {
 	mat_rv rv;
 	//not error checking type or format in this function
-	switch(format){
+	switch(args.format){
 	case COO:{
 		struct timespec start, end;
 		get_cpu_time(&start);
-		coo matrix1 = read_coo(file1);
-		coo matrix2 = read_coo(file2);
+		coo matrix1 = read_coo(args.file1);
+		coo matrix2 = read_coo(args.file2);
 		get_cpu_time(&end);
 		struct timespec delta = time_delta(end, start);
-		if(nothreading)
+		if(args.nothreading)
 			rv = addition_coo_nothreading(matrix1, matrix2);
 		else
 			rv = addition_coo(matrix1, matrix2);

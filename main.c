@@ -5,6 +5,7 @@
 //create threaded functions
 //revise mat_rv struct to contain bool for isval
 //add help flag and ability to display help page when no args given
+//add value search after
 
 //notes:
 //not freeing memory before exitting as OS should release allocated memory on exit
@@ -19,6 +20,7 @@ int main(int argc, char *argv[])
 	operation_args.operation = NO_OPERATION;
 	operation_args.format = FORM_DEFAULT;
 	operation_args.nothreading = false;
+	operation_args.block_size = 0;
 	int num_threads = -1;
 	bool logging = false;
 	bool silence = false;
@@ -73,7 +75,7 @@ int main(int argc, char *argv[])
 				num_threads = strtoimax(argv[i],NULL,10);
 				if(num_threads == 0){
 					if(errno == EINVAL){
-						fprintf(stderr,"Conversion error %d occurred after -t option",errno);
+						fprintf(stderr,"Conversion error %d occurred after -t option\n",errno);
 						exit(EXIT_FAILURE);
 					}
 					if(errno == ERANGE){
@@ -167,8 +169,32 @@ int main(int argc, char *argv[])
 					}
 					break;
 				case 4:
-					if(strncmp("BCSR",argv[i],4 * sizeof(char)) == 0)
+					if(strncmp("BCSR",argv[i],4 * sizeof(char)) == 0){
 						operation_args.format = BCSR;
+						++i;
+						bool isnum = true;
+						for(int j = 0; argv[i][j] != '\0'; ++j){
+							if(!(argv[i][j] >= '0' && argv[i][j] <= '9')){
+								isnum = false;
+								break;
+							}
+						}
+						if(!isnum){
+							fprintf(stderr, "No block size specified. Using default: 2\n");
+							continue;
+						}
+						operation_args.block_size = strtoimax(argv[i],NULL,10);
+						if(operation_args.block_size == 0){
+							if(errno == EINVAL){
+								fprintf(stderr,"Conversion error %d when specifying block size\n",errno);
+								exit(EXIT_FAILURE);
+							}
+							if(errno == ERANGE){
+								fprintf(stderr, "Block size out of integer range\n");
+								exit(EXIT_FAILURE);
+							}
+						}
+					}
 					else{
 						fprintf(stderr, "unrecognised format: %s\n",argv[i]);
 						exit(EXIT_FAILURE);
@@ -302,7 +328,6 @@ int main(int argc, char *argv[])
 			filename1,
 			filename2,
 			num_threads,
-			operation_args.operation == TRACE,
 			result);
 	}
 	if(!silence)
