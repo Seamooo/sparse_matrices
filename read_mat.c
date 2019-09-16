@@ -398,6 +398,10 @@ bcsr read_bcsr(FILE *file, int block_size)
 		fprintf(stderr, "Ran out of virtual memory when allocating bcsr struct\n");
 		exit(EXIT_FAILURE);
 	}
+	for(int i = 0; i < rv.rows; ++i){
+		for(int j = 0; j < rv.cols; ++j){
 
+		}
+	}
 	return rv;
 }

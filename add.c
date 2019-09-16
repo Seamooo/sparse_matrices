@@ -185,6 +185,7 @@ mat_rv addition(OPERATIONARGS args)
 		rv.t_construct = time_sum(rv.t_construct, delta);
 		free_coo(matrix1);
 		free_coo(matrix2);
+		rv.isval = false;
 		return rv;
 		break;
 	}

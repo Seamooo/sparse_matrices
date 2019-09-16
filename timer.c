@@ -55,7 +55,7 @@ void get_cpu_time(struct timespec *ts)
 #elif defined __unix__
 void get_cpu_time(struct timespec *ts)
 {
-	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, ts);
+	clock_gettime(CLOCK_REALTIME, ts);
 }
 #endif
 

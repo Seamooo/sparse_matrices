@@ -58,6 +58,7 @@ mat_rv scalar_multiply(OPERATIONARGS args)
 			rv = scalar_multiply_coo(matrix, args.scalar);
 		rv.t_construct = time_sum(rv.t_construct, delta);
 		free_coo(matrix);
+		rv.isval = false;
 		return rv;
 		break;
 	}

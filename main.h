@@ -42,6 +42,7 @@
 #define p() printf("got here\n"); fflush(stdout);
 #define pstr(x) printf("%s = %s\n",#x,x); fflush(stdout);
 #define pint(x) printf("%s = %d\n",#x,x); fflush(stdout);
+#define pfloat(x) printf("%s = %f\n",#x,x); fflush(stdout);
 #define phex(x) for(int i = 0; x[i] != '\0'; ++i){printf("%02x ", x[i]);} printf("\n"); fflush(stdout);
 
 typedef enum {
@@ -217,6 +218,7 @@ extern struct timespec time_delta(struct timespec, struct timespec);
 extern struct timespec time_sum(struct timespec, struct timespec);
 
 //print functions for debug
+extern void print_int_arr(int *, int);
 extern void print_mat_rv(mat_rv);
 extern void print_coo(coo);
 extern void print_csr(csr);

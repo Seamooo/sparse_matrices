@@ -6,6 +6,8 @@
 //revise mat_rv struct to contain bool for isval
 //add help flag and ability to display help page when no args given
 //add value search after
+//add ability to speed up with the stack rather than the heaps
+//get_cpu_time is redundant, please remove
 
 //notes:
 //not freeing memory before exitting as OS should release allocated memory on exit
@@ -99,7 +101,7 @@ int main(int argc, char *argv[])
 			break;
 		case 4:{
 			bool isset = (operation_args.operation != NO_OPERATION);
-			if(strncmp("--sc",argv[i], 4 * sizeof(char)) == 0){
+			if(strncmp("--sm",argv[i], 4 * sizeof(char)) == 0){
 				operation_args.operation = SCAL_MUL;
 				++i;
 				operation_args.scalar = strtof(argv[i],NULL);

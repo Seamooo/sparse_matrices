@@ -1,6 +1,18 @@
 #include "main.h"
 
 //debug representations
+void print_int_arr(int *arr, int length)
+{
+	printf("[");
+	for(int i = 0; i < length; ++i){
+		printf("%d", arr[i]);
+		if(i < length - 1){
+			printf(", ");
+		}
+	}
+	printf("]\n");
+}
+
 void print_mat_rv(mat_rv matrix)
 {
 	printf("[");

@@ -19,7 +19,7 @@ Additional Flags
 `-t` specify number of threads  
 `-l` log output  
 `--format <COO | CSR | ...> [BCSR BLOCK SIZE]` specify matrix format  
-`--nothreading` run with no threading 
+`--nothreading` run with no threading  
 `-s` run with silenced output  
 
 
@@ -54,9 +54,15 @@ SSK  Symmetric Skyline format
 SSS  Symmetric Sparse Skyline format  
 USS  Unsymmetric Sparse Skyline format  
 VBR  Variable Block Row format  
+
+Known Bugs:
+-----------
+scalar multiple not included does not throw error  
+scalar multiple does not support integer  
   
 Resources:
 ----------
-[sciencedirect.com/topics/computer-science/sparse-matrix-computation](sciencedirect.com/topics/computer-science/sparse-matrix-computation)  
+[https://sciencedirect.com/topics/computer-science/sparse-matrix-computation](https://sciencedirect.com/topics/computer-science/sparse-matrix-computation)  
 [https://inf.ethz.ch/personal/markusp/teaching/263-2300-ETH-spring11/slides/class15.pdf](https://inf.ethz.ch/personal/markusp/teaching/263-2300-ETH-spring11/slides/class15.pdf)  
 [https://peerj.com/articles/cs-151.pdf](https://peerj.com/articles/cs-151.pdf)
+
