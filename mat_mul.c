@@ -1,5 +1,6 @@
 #include "main.h"
 
+//nothreading 100% works
 mat_rv matrix_multiply_coo_nothreading(coo matrix1, coo matrix2)
 {
 	mat_rv rv;
@@ -162,7 +163,7 @@ mat_rv matrix_multiply_coo(coo matrix1, coo matrix2)
 		row_entries[i] = -1;
 		col_entries[i] = -1;
 	}
-	//my worrying unavoidable time complexity
+	//my worrying unavoidable time constants
 	for(int i = 0; i < matrix1.length; ++i){
 		if(row_entries[matrix1.elems[i].i] == -1)
 			row_entries[matrix1.elems[i].i] = i;
@@ -200,7 +201,7 @@ mat_rv matrix_multiply_coo(coo matrix1, coo matrix2)
 					mat2_i++;
 					mat1_i++;
 				}
-				if(matrix1.elems[row_entries[i] + mat1_i].j > matrix2.elems[col_entries[j] + mat2_i].i)
+				else if(matrix1.elems[row_entries[i] + mat1_i].j > matrix2.elems[col_entries[j] + mat2_i].i)
 					mat2_i++;
 				else
 					mat1_i++;
@@ -210,7 +211,8 @@ mat_rv matrix_multiply_coo(coo matrix1, coo matrix2)
 					continue;
 			}
 			else{
-				if(local_result.f == 0.0);
+				if(local_result.f == 0.0)
+					continue;
 			}
 			local_elems[i][local_elems_len[i]].i = i;
 			local_elems[i][local_elems_len[i]].j = j;
@@ -238,9 +240,10 @@ mat_rv matrix_multiply_coo(coo matrix1, coo matrix2)
 		index += local_elems_len[i];
 		free(local_elems[i]);
 	}
+	get_utc_time(&end);
 	free(local_elems);
 	free(local_elems_len);
-	get_utc_time(&end);
+	//get_utc_time(&end);
 	rv = coo_to_mat(result);
 	rv.t_process = time_delta(end, start);
 	free_coo(result);

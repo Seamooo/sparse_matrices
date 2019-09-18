@@ -6,8 +6,9 @@
 //revise mat_rv struct to contain bool for isval
 //add help flag and ability to display help page when no args given
 //add value search after
-//add ability to speed up with the stack rather than the heaps
+//add ability to speed up with the stack rather than using the heap with lower amounts of elements
 //get_cpu_time is redundant, please remove
+//need to be rigorous to check for memory leeks (check every size)
 
 //notes:
 //not freeing memory before exitting as OS should release allocated memory on exit

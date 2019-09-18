@@ -45,9 +45,9 @@ void print_coo(coo matrix)
 	printf("[");
 	for(int i = 0; i < matrix.length; ++i){
 		if(matrix.elems[i].type == MAT_INT)
-			printf("[i:%d,j:%d,val:%d]",matrix.elems[i].i, matrix.elems[i].j, matrix.elems[i].val.i);
+			printf("<i:%d, j:%d, val:%d>",matrix.elems[i].i, matrix.elems[i].j, matrix.elems[i].val.i);
 		else
-			printf("[i:%d,j:%d,val:%f]",matrix.elems[i].i, matrix.elems[i].j, matrix.elems[i].val.f);
+			printf("<i:%d, j:%d, val:%f>",matrix.elems[i].i, matrix.elems[i].j, matrix.elems[i].val.f);
 		if(i < matrix.length - 1)
 			printf(", ");
 	}
