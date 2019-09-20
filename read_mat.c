@@ -13,7 +13,7 @@ MAT_TYPE get_type(FILE *file){
 			exit(EXIT_FAILURE);
 		}
 		break;
-	case 4:
+	case 5:
 		if(strncmp("float", type_str, 4*sizeof(char)) == 0)
 			type = MAT_FLOAT;
 		else{

@@ -9,6 +9,9 @@ sparse_matrix.bin:$(CFILES) $(HFILES)
 debug.bin:$(CFILES) $(HFILES)
 	$(GCC_CMD) $(GCCPARAMS) -g -o $@ $(CFILES)
 
+#remember to add actions for creating unittests once finalised
+
 clean:
 	rm out.bin
 	rm debug.bin
+	rm unittests.sh

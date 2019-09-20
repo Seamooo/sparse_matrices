@@ -39,7 +39,7 @@ mat_rv trace_coo_nothreading(coo matrix)
 	free_coo(result);
 	return rv;
 }
-mat_rv trace_coo(coo matrix)
+mat_rv trace_coo(coo matrix, int thread_count)
 {
 	mat_rv rv;
 	if(matrix.rows != matrix.cols){
@@ -65,7 +65,7 @@ mat_rv trace_coo(coo matrix)
 	struct timespec start, end;
 	get_cpu_time(&start);
 	int i;
-	#pragma omp parallel for private(i) shared(result, matrix)
+	#pragma omp parallel for num_threads(thread_count) private(i) shared(result, matrix)
 	for(i = 0; i < matrix.length; ++i){
 		if(matrix.elems[i].i == matrix.elems[i].j){
 			if (result.elems[0].type == MAT_INT)
@@ -96,7 +96,7 @@ mat_rv trace(OPERATIONARGS args)
 		if(args.nothreading)
 			rv = trace_coo_nothreading(matrix);
 		else
-			rv = trace_coo(matrix);
+			rv = trace_coo(matrix, args.num_threads);
 		rv.t_construct = time_sum(rv.t_construct, delta);
 		free_coo(matrix);
 		rv.isval = true;

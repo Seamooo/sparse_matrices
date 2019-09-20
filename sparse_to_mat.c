@@ -36,6 +36,7 @@ mat_rv coo_to_mat(coo matrix){
 		}
 		if(rv.type == MAT_INT){
 			if (rv.vals.i[matrix.elems[i].i * rv.rows + matrix.elems[i].j] != 0){
+				printf("(%d, %d)\n", matrix.elems[i].i, matrix.elems[i].j);
 				rv.error = ERR_DUPLICATE;
 				break;
 			}

@@ -3,9 +3,7 @@
 //TODO:
 //bug/misunderstood implementation with strtoimax where extremely large values return -1
 //create threaded functions
-//revise mat_rv struct to contain bool for isval
 //add help flag and ability to display help page when no args given
-//add value search after
 //add ability to speed up with the stack rather than using the heap with lower amounts of elements
 //get_cpu_time is redundant, please remove
 //need to be rigorous to check for memory leeks (check every size)
@@ -13,6 +11,8 @@
 //notes:
 //not freeing memory before exitting as OS should release allocated memory on exit
 //	for all OSes that are supported
+
+//main function handles argument parsing and control flow with regards to some flags
 
 int main(int argc, char *argv[])
 {
@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 	operation_args.format = FORM_DEFAULT;
 	operation_args.nothreading = false;
 	operation_args.block_size = 0;
-	int num_threads = -1;
+	operation_args.num_threads = -1;
 	bool logging = false;
 	bool silence = false;
 	char *filename1 = NULL;
@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 	//not using getopt for compatibility
 	if(argc < 2){
 		fprintf(stderr,"nothing to do\n");
-		exit(EXIT_SUCCESS);
+		exit(EXIT_FAILURE);
 	}
 	int i = 1	;
 	while(i < argc){
@@ -75,20 +75,16 @@ int main(int argc, char *argv[])
 					fprintf(stderr,"-t missing argument\n");
 					exit(EXIT_FAILURE);
 				}
-				num_threads = strtoimax(argv[i],NULL,10);
-				if(num_threads == 0){
+				operation_args.num_threads = strtoimax(argv[i],NULL,10);
+				if(operation_args.num_threads == 0){
 					if(errno == EINVAL){
 						fprintf(stderr,"Conversion error %d occurred after -t option\n",errno);
 						exit(EXIT_FAILURE);
 					}
 					if(errno == ERANGE){
-						fprintf(stderr, "requested greater than max threads... defaulting to %d threads\n", omp_get_max_threads());
-						num_threads = omp_get_max_threads();
+						fprintf(stderr, "Number of threads specified out of range\n");
+						exit(EXIT_FAILURE);
 					}
-				}
-				if(num_threads > omp_get_max_threads()){
-					fprintf(stderr, "requested greater than max threads... defaulting to %d threads\n", omp_get_max_threads());
-					num_threads = omp_get_max_threads();
 				}
 			}
 			else if(strncmp("-l",argv[i], 2*sizeof(char)) == 0)
@@ -227,16 +223,16 @@ int main(int argc, char *argv[])
 		}
 		++i;
 	}
-	if(num_threads == -1 && !operation_args.nothreading){
+	if(operation_args.num_threads == -1 && !operation_args.nothreading){
 		fprintf(stderr,"No number of threads provided\nUsing default num_threads: 2\n");
-		num_threads = 2;
+		operation_args.num_threads = 2;
 	}
-	if(num_threads != -1 && operation_args.nothreading)
+	if(operation_args.num_threads != -1 && operation_args.nothreading)
 		fprintf(stderr, "Warning: number of threads specified while using --nothreading flag\n");
 	if(operation_args.nothreading)
-		num_threads = 1;
+		operation_args.num_threads = 1;
 	else
-		omp_set_num_threads(num_threads);
+		omp_set_num_threads(operation_args.num_threads);
 	//check that the right number of files were provided
 	switch(operation_args.operation){
 	case SCAL_MUL:
@@ -270,7 +266,8 @@ int main(int argc, char *argv[])
 		}
 		break;
 	default:
-		break;
+		fprintf(stderr, "No operation specified\n");
+		exit(EXIT_FAILURE);
 	}
 	operation_args.file1 = NULL;
 	operation_args.file2 = NULL;
@@ -330,9 +327,10 @@ int main(int argc, char *argv[])
 			numfiles,
 			filename1,
 			filename2,
-			num_threads,
+			operation_args.num_threads,
 			result);
 	}
 	if(!silence)
 		print_mat_rv(result);
+	exit(EXIT_SUCCESS);
 }

@@ -19,14 +19,14 @@ mat_rv scalar_multiply_coo_nothreading(coo matrix, float scalar)
 	return rv;
 }
 
-//slow down at this stages
-mat_rv scalar_multiply_coo(coo matrix, float scalar)
+//slow down at this stage
+mat_rv scalar_multiply_coo(coo matrix, float scalar, int thread_count)
 {
 	mat_rv rv;
 	struct timespec start, end;
 	int i;
 	get_cpu_time(&start);
-	#pragma omp parallel for private(i) shared(rv, matrix, scalar)
+	#pragma omp parallel for num_threads(thread_count) private(i) shared(rv, matrix, scalar)
 	for(i = 0; i < matrix.length; ++i){
 		if(matrix.type == MAT_INT)
 			matrix.elems[i].val.f = (float)matrix.elems[i].val.i * scalar;
@@ -55,7 +55,7 @@ mat_rv scalar_multiply(OPERATIONARGS args)
 		if(args.nothreading)
 			rv = scalar_multiply_coo_nothreading(matrix, args.scalar);
 		else
-			rv = scalar_multiply_coo(matrix, args.scalar);
+			rv = scalar_multiply_coo(matrix, args.scalar, args.num_threads);
 		rv.t_construct = time_sum(rv.t_construct, delta);
 		free_coo(matrix);
 		rv.isval = false;

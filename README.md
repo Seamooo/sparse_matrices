@@ -64,6 +64,6 @@ Resources:
 ----------
 [https://sciencedirect.com/topics/computer-science/sparse-matrix-computation](https://sciencedirect.com/topics/computer-science/sparse-matrix-computation)  
 [https://inf.ethz.ch/personal/markusp/teaching/263-2300-ETH-spring11/slides/class15.pdf](https://inf.ethz.ch/personal/markusp/teaching/263-2300-ETH-spring11/slides/class15.pdf)  
-[https://peerj.com/articles/cs-151.pdf](https://peerj.com/articles/cs-151.pdf)
+[https://peerj.com/articles/cs-151.pdf](https://peerj.com/articles/cs-151.pdf)  
 [https://www.geeksforgeeks.org/operations-sparse-matrices/](https://www.geeksforgeeks.org/operations-sparse-matrices/)
 

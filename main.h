@@ -181,6 +181,7 @@ typedef struct{
 	float scalar;
 	bool nothreading;
 	int block_size;
+	int num_threads;
 } OPERATIONARGS;
 //handle sks later
 //main function externs

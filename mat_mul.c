@@ -12,6 +12,8 @@ mat_rv matrix_multiply_coo_nothreading(coo matrix1, coo matrix2)
 		rv.error = ERR_TYPE_MISSMATCH;
 		return rv;
 	}
+	struct timespec start, end;
+	get_utc_time(&start);
 	sort_coo(matrix2,ORDER_COL);
 	//don't need to sort matrix1 as it's already in reduced forms
 	coo result;
@@ -26,8 +28,6 @@ mat_rv matrix_multiply_coo_nothreading(coo matrix1, coo matrix2)
 	}
 	int matrix1_i = 0;
 	int matrix2_i = 0;
-	struct timespec start, end;
-	get_utc_time(&start);
 	while(matrix1_i < matrix1.length){
 		int row_start = matrix1_i;
 		matrix2_i = 0;
@@ -102,7 +102,7 @@ mat_rv matrix_multiply_coo_nothreading(coo matrix1, coo matrix2)
 	return rv;
 }
 
-mat_rv matrix_multiply_coo(coo matrix1, coo matrix2)
+mat_rv matrix_multiply_coo(coo matrix1, coo matrix2, int thread_count)
 {
 	mat_rv rv;
 	if(matrix1.cols != matrix2.rows){
@@ -115,14 +115,15 @@ mat_rv matrix_multiply_coo(coo matrix1, coo matrix2)
 	}
 	struct timespec start, end;
 	get_utc_time(&start);
+	//largest unthreaded complexity
 	sort_coo(matrix2,ORDER_COL);
-	//don't need to sort matrix1 as it's already in reduced forms
+	//don't need to sort matrix1 as it's already in row column order
 	coo result;
 	result.rows = matrix1.rows;
 	result.cols = matrix2.cols;
 	result.type = matrix1.type;
 	result.length = 0;
-	//local storgae elems
+	//local storage elems
 	coo_elem **local_elems;
 	int *local_elems_len;
 	if(!(local_elems = (coo_elem**)malloc(matrix1.rows * sizeof(coo_elem *)))){
@@ -163,7 +164,7 @@ mat_rv matrix_multiply_coo(coo matrix1, coo matrix2)
 		row_entries[i] = -1;
 		col_entries[i] = -1;
 	}
-	//my worrying unavoidable time constants
+	//my worrying unavoidable time constants for COO
 	for(int i = 0; i < matrix1.length; ++i){
 		if(row_entries[matrix1.elems[i].i] == -1)
 			row_entries[matrix1.elems[i].i] = i;
@@ -175,7 +176,7 @@ mat_rv matrix_multiply_coo(coo matrix1, coo matrix2)
 		col_lens[matrix2.elems[i].j]++;
 	}
 	int i, j;
-	#pragma omp parallel for private(i, j) shared(matrix1, matrix2, local_elems)
+	#pragma omp parallel for num_threads(thread_count) private(i, j) shared(matrix1, matrix2, local_elems)
 	for(i = 0; i < matrix1.rows; ++i){
 		for(j = 0; j < matrix2.cols; ++j){
 			if(row_lens[i] == 0)
@@ -240,10 +241,9 @@ mat_rv matrix_multiply_coo(coo matrix1, coo matrix2)
 		index += local_elems_len[i];
 		free(local_elems[i]);
 	}
-	get_utc_time(&end);
 	free(local_elems);
 	free(local_elems_len);
-	//get_utc_time(&end);
+	get_utc_time(&end);
 	rv = coo_to_mat(result);
 	rv.t_process = time_delta(end, start);
 	free_coo(result);
@@ -264,7 +264,7 @@ mat_rv matrix_multiply(OPERATIONARGS args)
 		if(args.nothreading)
 			rv = matrix_multiply_coo_nothreading(matrix1, matrix2);
 		else
-			rv = matrix_multiply_coo(matrix1, matrix2);
+			rv = matrix_multiply_coo(matrix1, matrix2, args.num_threads);
 		rv.t_construct = time_sum(rv.t_construct, delta);
 		free_coo(matrix1);
 		free_coo(matrix2);
