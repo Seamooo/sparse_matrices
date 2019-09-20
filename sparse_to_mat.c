@@ -20,7 +20,7 @@ mat_rv coo_to_mat(coo matrix){
 		}
 	}
 	struct timespec start, end;
-	get_cpu_time(&start);
+	get_utc_time(&start);
 	for(int i = 0; i < rv.rows; ++i){
 		for(int j = 0; j < rv.cols; ++j){
 			if (rv.type == MAT_INT)
@@ -50,7 +50,7 @@ mat_rv coo_to_mat(coo matrix){
 			rv.vals.f[matrix.elems[i].i * rv.rows + matrix.elems[i].j] = matrix.elems[i].val.f;
 		}
 	}
-	get_cpu_time(&end);
+	get_utc_time(&end);
 	rv.t_construct = time_delta(end, start);
 	return rv;
 }

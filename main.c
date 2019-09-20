@@ -5,7 +5,6 @@
 //create threaded functions
 //add help flag and ability to display help page when no args given
 //add ability to speed up with the stack rather than using the heap with lower amounts of elements
-//get_cpu_time is redundant, please remove
 //need to be rigorous to check for memory leeks (check every size)
 
 //notes:

@@ -24,7 +24,7 @@ mat_rv trace_coo_nothreading(coo matrix)
 	else
 		result.elems[0].val.f = 0.0;
 	struct timespec start, end;
-	get_cpu_time(&start);
+	get_utc_time(&start);
 	for(int i = 0; i < matrix.length; ++i){
 		if(matrix.elems[i].i == matrix.elems[i].j){
 			if (result.elems[0].type == MAT_INT)
@@ -33,7 +33,7 @@ mat_rv trace_coo_nothreading(coo matrix)
 				result.elems[0].val.f += matrix.elems[i].val.f;
 		}
 	}
-	get_cpu_time(&end);
+	get_utc_time(&end);
 	rv = coo_to_mat(result);
 	rv.t_process = time_delta(end, start);
 	free_coo(result);
@@ -63,7 +63,7 @@ mat_rv trace_coo(coo matrix, int thread_count)
 	else
 		result.elems[0].val.f = 0.0;
 	struct timespec start, end;
-	get_cpu_time(&start);
+	get_utc_time(&start);
 	int i;
 	#pragma omp parallel for num_threads(thread_count) private(i) shared(result, matrix)
 	for(i = 0; i < matrix.length; ++i){
@@ -74,7 +74,7 @@ mat_rv trace_coo(coo matrix, int thread_count)
 				result.elems[0].val.f += matrix.elems[i].val.f;
 		}
 	}
-	get_cpu_time(&end);
+	get_utc_time(&end);
 	//add parallelism here later
 	rv = coo_to_mat(result);
 	rv.t_process = time_delta(end, start);
@@ -89,9 +89,9 @@ mat_rv trace(OPERATIONARGS args)
 	switch(args.format){
 	case COO:{
 		struct timespec start, end;
-		get_cpu_time(&start);
+		get_utc_time(&start);
 		coo matrix = read_coo(args.file1);
-		get_cpu_time(&end);
+		get_utc_time(&end);
 		struct timespec delta = time_delta(end, start);
 		if(args.nothreading)
 			rv = trace_coo_nothreading(matrix);
@@ -105,9 +105,9 @@ mat_rv trace(OPERATIONARGS args)
 	}
 	case CSR:{
 		struct timespec start, end;
-		get_cpu_time(&start);
+		get_utc_time(&start);
 		csr matrix = read_csr(args.file1);
-		get_cpu_time(&end);
+		get_utc_time(&end);
 		//struct timespec delta = time_delta(end, start);
 		print_csr(matrix);
 		fprintf(stderr, "operation not implemented\n");
@@ -115,9 +115,9 @@ mat_rv trace(OPERATIONARGS args)
 	}
 	case CSC:{
 		struct timespec start, end;
-		get_cpu_time(&start);
+		get_utc_time(&start);
 		csc matrix = read_csc(args.file1);
-		get_cpu_time(&end);
+		get_utc_time(&end);
 		//struct timespec delta = time_delta(end, start);
 		print_csc(matrix);
 		fprintf(stderr, "operation not implemented\n");
@@ -125,9 +125,9 @@ mat_rv trace(OPERATIONARGS args)
 	}
 	case BCSR:{
 		struct timespec start, end;
-		get_cpu_time(&start);
+		get_utc_time(&start);
 		bcsr matrix = read_bcsr(args.file1, args.block_size);
-		get_cpu_time(&end);
+		get_utc_time(&end);
 		//struct timespec delta = time_delta(end, start);
 		print_bcsr(matrix);
 		fprintf(stderr, "operation not implemented\n");

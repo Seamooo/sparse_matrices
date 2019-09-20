@@ -48,18 +48,6 @@ int get_timezone_offset()
 #endif
 
 #ifdef _WIN32
-void get_cpu_time(struct timespec *ts)
-{
-	timespec_get(ts, TIME_UTC);
-}
-#elif defined __unix__
-void get_cpu_time(struct timespec *ts)
-{
-	clock_gettime(CLOCK_REALTIME, ts);
-}
-#endif
-
-#ifdef _WIN32
 void get_utc_time(struct timespec *ts)
 {
 	timespec_get(ts, TIME_UTC);
