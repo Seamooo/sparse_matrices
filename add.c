@@ -242,22 +242,22 @@ mat_rv addition_coo(coo matrix1, coo matrix2, int thread_count)
 	return rv;
 }
 
-mat_rv addition(OPERATIONARGS args)
+mat_rv addition(OPERATIONARGS *args)
 {
 	mat_rv rv;
 	//not error checking type or format in this function
-	switch(args.format){
+	switch(args->format){
 	case COO:{
 		struct timespec start, end;
 		get_utc_time(&start);
-		coo matrix1 = read_coo(args.file1);
-		coo matrix2 = read_coo(args.file2);
+		coo matrix1 = read_coo(args->file1);
+		coo matrix2 = read_coo(args->file2);
 		get_utc_time(&end);
 		struct timespec delta = time_delta(end, start);
-		if(args.nothreading)
+		if(args->nothreading)
 			rv = addition_coo_nothreading(matrix1, matrix2);
 		else
-			rv = addition_coo(matrix1, matrix2, args.num_threads);
+			rv = addition_coo(matrix1, matrix2, args->num_threads);
 		rv.t_construct = time_sum(rv.t_construct, delta);
 		free_coo(matrix1);
 		free_coo(matrix2);

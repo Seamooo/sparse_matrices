@@ -178,7 +178,11 @@ typedef struct{
 	FILE *file2;
 	OPERATION operation;
 	FORMAT format;
-	long double scalar;
+	MAT_TYPE scalar_type;
+	union{
+		long double f;
+		int i;
+	} scalar;
 	bool nothreading;
 	int block_size;
 	int num_threads;
@@ -186,15 +190,15 @@ typedef struct{
 //handle sks later
 //main function externs
 extern char *readline(FILE *);
-extern mat_rv execute_operation(OPERATIONARGS);
+extern mat_rv execute_operation(OPERATIONARGS*);
 extern void create_log_file(struct timespec, OPERATION, int, char *, char *, int, mat_rv);
 
 //operation functions
-extern mat_rv scalar_multiply(OPERATIONARGS);
-extern mat_rv trace(OPERATIONARGS);
-extern mat_rv addition(OPERATIONARGS);
-extern mat_rv transpose(OPERATIONARGS);
-extern mat_rv matrix_multiply(OPERATIONARGS);
+extern mat_rv scalar_multiply(OPERATIONARGS*);
+extern mat_rv trace(OPERATIONARGS*);
+extern mat_rv addition(OPERATIONARGS*);
+extern mat_rv transpose(OPERATIONARGS*);
+extern mat_rv matrix_multiply(OPERATIONARGS*);
 
 //free mat functions
 extern void free_coo(coo);

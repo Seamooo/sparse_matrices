@@ -147,6 +147,7 @@ coo read_coo(FILE* file)
 	}
 	rv.length = 0;
 	char *line = readline(file);
+	fclose(file);
 	int start = 0;
 	for(int i = 0; i < rv.rows; ++i){
 		for(int j = 0; j < rv.cols; ++j){
@@ -214,6 +215,7 @@ csr read_csr(FILE *file)
 		exit(EXIT_FAILURE);
 	}
 	char *line = readline(file);
+	fclose(file);
 	int start = 0;
 	rv.ia[0] = 0;
 	for(int i = 0; i < rv.rows; ++i){
@@ -310,6 +312,7 @@ csc read_csc(FILE *file)
 		}
 	}
 	char *line = readline(file);
+	fclose(file);
 	int start = 0;
 	for(int i = 0; i < rv.rows; ++i){
 		if(rv.type == MAT_INT){

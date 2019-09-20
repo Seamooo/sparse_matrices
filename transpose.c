@@ -42,20 +42,20 @@ mat_rv transpose_coo(coo matrix, int thread_count)
 	return rv;
 }
 
-mat_rv transpose(OPERATIONARGS args)
+mat_rv transpose(OPERATIONARGS *args)
 {
 	mat_rv rv;
-	switch(args.format){
+	switch(args->format){
 	case COO:{
 		struct timespec start, end;
 		get_utc_time(&start);
-		coo matrix = read_coo(args.file1);
+		coo matrix = read_coo(args->file1);
 		get_utc_time(&end);
 		struct timespec delta = time_delta(end, start);
-		if(args.nothreading)
+		if(args->nothreading)
 			rv = transpose_coo_nothreading(matrix);
 		else
-			rv = transpose_coo(matrix, args.num_threads);
+			rv = transpose_coo(matrix, args->num_threads);
 		rv.t_construct = time_sum(rv.t_construct, delta);
 		free_coo(matrix);
 		return rv;

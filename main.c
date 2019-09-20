@@ -19,12 +19,17 @@ int main(int argc, char *argv[])
 	struct timespec call_time;
 	get_utc_time(&call_time);
 	int numfiles = 0;
+	//will send address of operation_args to functions to avoid
+	//incompatibility with versions of GCC earlier than 4.4
 	OPERATIONARGS operation_args;
 	operation_args.operation = NO_OPERATION;
 	operation_args.format = FORM_DEFAULT;
 	operation_args.nothreading = false;
 	operation_args.block_size = 0;
 	operation_args.num_threads = -1;
+	operation_args.scalar_type = MAT_NONE;
+	//populating to prevent any weird compiler behaviour
+	operation_args.scalar.i = 0;
 	bool logging = false;
 	bool silence = false;
 	char *filename1 = NULL;
@@ -101,17 +106,53 @@ int main(int argc, char *argv[])
 			if(strncmp("--sm",argv[i], 4 * sizeof(char)) == 0){
 				operation_args.operation = SCAL_MUL;
 				++i;
-				operation_args.scalar = strtold(argv[i],NULL);
-				if(operation_args.scalar == 0.0){
-					if(errno == ERANGE){
-						fprintf(stderr, "Element %s outside of range of specification\n", argv[i]);
+				if(i == argc){
+					fprintf(stderr, "--sm missing argument\n");
+					exit(EXIT_FAILURE);
+				}
+				bool isfloat = false;
+				int arg_len = strlen(argv[i]);
+				for(int j = 0; j < arg_len; ++j){
+					//assumes ascii representation
+					if(argv[i][j] < '0' || argv[i][j] > '9'){
+						if(j == 0 && argv[i][j] == '-')
+							continue;
+						if(argv[i][j] == '.' && !isfloat){
+							isfloat = true;
+							continue;
+						}
+						fprintf(stderr, "Could not convert %s to num\n", argv[i]);
 						exit(EXIT_FAILURE);
 					}
 				}
-				else if (operation_args.scalar == HUGE_VALF || operation_args.scalar == (-1)*HUGE_VALF){
-					if(errno == ERANGE){
-						fprintf(stderr, "Element %s outside of range of specification\n", argv[i]);
-						exit(EXIT_FAILURE);
+				if(isfloat){
+					operation_args.scalar_type = MAT_LDOUBLE;
+					operation_args.scalar.f = strtold(argv[i],NULL);
+					if(operation_args.scalar.f == 0.0){
+						if(errno == ERANGE){
+							fprintf(stderr, "Element %s outside of range of specification\n", argv[i]);
+							exit(EXIT_FAILURE);
+						}
+					}
+					else if (operation_args.scalar.f == HUGE_VALF || operation_args.scalar.f == (-1)*HUGE_VALF){
+						if(errno == ERANGE){
+							fprintf(stderr, "Element %s outside of range of specification\n", argv[i]);
+							exit(EXIT_FAILURE);
+						}
+					}
+				}
+				else{
+					operation_args.scalar_type = MAT_INT;
+					operation_args.scalar.i = strtoimax(argv[i],NULL,10);
+					if(operation_args.scalar.i == 0){
+						if(errno == EINVAL){
+							fprintf(stderr,"Conversion error %d when specifying scalar\n",errno);
+							exit(EXIT_FAILURE);
+						}
+						if(errno == ERANGE){
+							fprintf(stderr, "Scalar out of integer range\n");
+							exit(EXIT_FAILURE);
+						}
 					}
 				}
 			}
@@ -283,7 +324,7 @@ int main(int argc, char *argv[])
 			exit(EXIT_FAILURE);
 		}
 	}
-	mat_rv result = execute_operation(operation_args);
+	mat_rv result = execute_operation(&operation_args);
 	switch(result.error){
 	case ERR_CONSTRUCTION:
 		fprintf(stderr, "Internal Error constructing result matrix from sparse matrix\n");
