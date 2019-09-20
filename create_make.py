@@ -10,7 +10,6 @@ with open(sys.argv[1], 'r') as fp:
 	lines = fp.readlines()
 	lines = list(map(lambda x: x.rstrip('\n'), lines))
 	print('%s:' % sys.argv[1], file=out)
-	print('\t@echo \'\' > %s' % sys.argv[1], file=out)
 	firstline = True
 	for i in range(len(lines)):
 		newline = []
@@ -21,7 +20,10 @@ with open(sys.argv[1], 'r') as fp:
 				newline.append('\\$$')
 			else:
 				newline.append(c)
-		if firstline:
-			firstline = False
-			continue
-		print('\t@echo "%s" >> %s' % (''.join(newline), sys.argv[1]), file=out)
+		newline = ''.join(newline)
+		for i in range(0,len(newline), 80):
+			if firstline:
+				firstline = False
+				print('\t@printf "%s%s" > %s' % (newline[i:(i+80)], '\\n' if i + 80 >= len(newline) else '', sys.argv[1]), file=out)
+			else:
+				print('\t@printf "%s%s" >> %s' % (newline[i:(i+80)], '\\n' if i + 80 >= len(newline) else '', sys.argv[1]), file=out)
