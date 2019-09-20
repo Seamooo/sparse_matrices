@@ -15,7 +15,7 @@ MAT_TYPE get_type(FILE *file){
 		break;
 	case 5:
 		if(strncmp("float", type_str, 4*sizeof(char)) == 0)
-			type = MAT_FLOAT;
+			type = MAT_LDOUBLE;
 		else{
 			fprintf(stderr, "unknown type: %s provided in input file\n", type_str);
 			exit(EXIT_FAILURE);
@@ -73,7 +73,7 @@ int read_int_token(char *line, int *start)
 	return rv;
 }
 
-float read_float_token(char *line, int *start)
+long double read_float_token(char *line, int *start)
 {
 	int size = MALLOCINIT;
 	char *rv_str;
@@ -106,7 +106,7 @@ float read_float_token(char *line, int *start)
 		(*start)++;
 	}
 	rv_str[length - 1] = '\0';
-	float rv = strtof(rv_str,NULL);
+	long double rv = strtold(rv_str,NULL);
 	if(rv == 0.0){
 		if(errno == ERANGE){
 			fprintf(stderr, "Element %s outside of range of specification\n", rv_str);
@@ -152,7 +152,7 @@ coo read_coo(FILE* file)
 		for(int j = 0; j < rv.cols; ++j){
 			union{
 				int i;
-				float f;
+				long double f;
 			} val;
 			if(rv.type == MAT_INT){
 				val.i = read_int_token(line, &start);
@@ -174,10 +174,10 @@ coo read_coo(FILE* file)
 			rv.elems[rv.length].type = rv.type;
 			rv.elems[rv.length].i = i;
 			rv.elems[rv.length].j = j;
-			if(rv.type == MAT_FLOAT)
-				rv.elems[rv.length].val.f = val.f;
-			else
+			if(rv.type == MAT_INT)
 				rv.elems[rv.length].val.i = val.i;
+			else
+				rv.elems[rv.length].val.f = val.f;
 			rv.length++;
 		}
 	}
@@ -200,7 +200,7 @@ csr read_csr(FILE *file)
 		}
 	}
 	else{
-		if(!(rv.nnz.f = (float*)malloc(nnz_size * sizeof(float)))){
+		if(!(rv.nnz.f = (long double*)malloc(nnz_size * sizeof(long double)))){
 			fprintf(stderr, "Ran out of virtual memory when allocating csr struct\n");
 			exit(EXIT_FAILURE);
 		}
@@ -221,7 +221,7 @@ csr read_csr(FILE *file)
 		for(int j = 0; j < rv.cols; ++j){
 			union{
 				int i;
-				float f;
+				long double f;
 			} val;
 			if(rv.type == MAT_INT){
 				val.i = read_int_token(line, &start);
@@ -242,7 +242,7 @@ csr read_csr(FILE *file)
 					}
 				}
 				else{
-					if(!(rv.nnz.f = (float*)realloc(rv.nnz.f, nnz_size * sizeof(float)))){
+					if(!(rv.nnz.f = (long double*)realloc(rv.nnz.f, nnz_size * sizeof(long double)))){
 						fprintf(stderr, "Ran out of virtual memory when allocating csr struct\n");
 						exit(EXIT_FAILURE);
 					}
@@ -280,7 +280,7 @@ csc read_csc(FILE *file)
 		}
 	}
 	else{
-		if(!(rv.nnz.f = (float*)malloc(nnz_size * sizeof(float)))){
+		if(!(rv.nnz.f = (long double*)malloc(nnz_size * sizeof(long double)))){
 			fprintf(stderr, "Ran out of virtual memory when allocating csc struct\n");
 			exit(EXIT_FAILURE);
 		}
@@ -295,7 +295,7 @@ csc read_csc(FILE *file)
 	}
 	union{
 		int **i;
-		float **f;
+		long double **f;
 	} temp_mat_vals;
 	if(rv.type == MAT_INT){
 		if(!(temp_mat_vals.i = (int**)malloc(rv.rows*sizeof(int*)))){
@@ -304,7 +304,7 @@ csc read_csc(FILE *file)
 		}
 	}
 	else{
-		if(!(temp_mat_vals.f = (float**)malloc(rv.rows*sizeof(float*)))){
+		if(!(temp_mat_vals.f = (long double**)malloc(rv.rows*sizeof(long double*)))){
 			fprintf(stderr, "Ran out of virtual memory when allocating matrix buffer\n");
 			exit(EXIT_FAILURE);
 		}
@@ -319,7 +319,7 @@ csc read_csc(FILE *file)
 			}
 		}
 		else{
-			if(!(temp_mat_vals.f[i] = (float*)malloc(rv.cols*sizeof(float)))){
+			if(!(temp_mat_vals.f[i] = (long double*)malloc(rv.cols*sizeof(long double)))){
 				fprintf(stderr, "Ran out of virtual memory when allocating matrix buffer\n");
 				exit(EXIT_FAILURE);
 			}
@@ -352,7 +352,7 @@ csc read_csc(FILE *file)
 					}
 				}
 				else{
-					if(!(rv.nnz.f = (float*)realloc(rv.nnz.f, nnz_size * sizeof(float)))){
+					if(!(rv.nnz.f = (long double*)realloc(rv.nnz.f, nnz_size * sizeof(long double)))){
 						fprintf(stderr, "Ran out of virtual memory when allocating csr struct\n");
 						exit(EXIT_FAILURE);
 					}

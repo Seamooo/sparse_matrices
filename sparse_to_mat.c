@@ -13,8 +13,8 @@ mat_rv coo_to_mat(coo matrix){
 		}
 	}
 	else{
-		rv.type = MAT_FLOAT;
-		if(!(rv.vals.f = (float*)malloc(rv.rows * rv.cols * sizeof(float)))){
+		rv.type = MAT_LDOUBLE;
+		if(!(rv.vals.f = (long double*)malloc(rv.rows * rv.cols * sizeof(long double)))){
 			fprintf(stderr,"Ran out of virtual memory while allocating mat_rv struct\n");
 			exit(EXIT_FAILURE);
 		}

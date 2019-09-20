@@ -36,7 +36,7 @@ mat_rv matrix_multiply_coo_nothreading(coo matrix1, coo matrix2)
 			int curr_col = matrix2.elems[matrix2_i].j;
 			int curr_row = matrix1.elems[matrix1_i].i;
 			union{
-				float f;
+				long double f;
 				int i;
 			} val;
 			if(result.type == MAT_INT)
@@ -185,7 +185,7 @@ mat_rv matrix_multiply_coo(coo matrix1, coo matrix2, int thread_count)
 				continue;
 			union{
 				int i;
-				float f;
+				long double f;
 			} local_result;
 			if(result.type == MAT_INT)
 				local_result.i = 0;

@@ -53,7 +53,7 @@ void print_mat_rv(mat_rv matrix)
 		if(matrix.type == MAT_INT)
 			printf("%d\n", matrix.vals.i[0]);
 		else
-			printf("%f\n", matrix.vals.f[0]);
+			printf("%Lf\n", matrix.vals.f[0]);
 	}
 	else{
 		printf("[");
@@ -63,7 +63,7 @@ void print_mat_rv(mat_rv matrix)
 				if(matrix.type == MAT_INT)
 					printf("%d",matrix.vals.i[i*matrix.cols+j]);
 				else
-					printf("%f",matrix.vals.f[i*matrix.cols+j]);
+					printf("%Lf",matrix.vals.f[i*matrix.cols+j]);
 				if(j < matrix.cols - 1){
 					printf(", ");
 				}
@@ -89,7 +89,7 @@ void print_coo(coo matrix)
 		if(matrix.elems[i].type == MAT_INT)
 			printf("<i:%d, j:%d, val:%d>",matrix.elems[i].i, matrix.elems[i].j, matrix.elems[i].val.i);
 		else
-			printf("<i:%d, j:%d, val:%f>",matrix.elems[i].i, matrix.elems[i].j, matrix.elems[i].val.f);
+			printf("<i:%d, j:%d, val:%Lf>",matrix.elems[i].i, matrix.elems[i].j, matrix.elems[i].val.f);
 		if(i < matrix.length - 1)
 			printf(", ");
 	}
@@ -107,7 +107,7 @@ void print_csr(csr matrix)
 		if(matrix.type == MAT_INT)
 			printf("%d",matrix.nnz.i[i]);
 		else
-			printf("%f",matrix.nnz.f[i]);
+			printf("%Lf",matrix.nnz.f[i]);
 		if(i < matrix.num_vals - 1)
 			printf(", ");
 	}
@@ -139,7 +139,7 @@ void print_csc(csc matrix)
 		if(matrix.type == MAT_INT)
 			printf("%d",matrix.nnz.i[i]);
 		else
-			printf("%f",matrix.nnz.f[i]);
+			printf("%Lf",matrix.nnz.f[i]);
 		if(i < matrix.num_vals - 1)
 			printf(", ");
 	}

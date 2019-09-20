@@ -159,8 +159,12 @@ void create_log_file(struct timespec call_time, OPERATION operation, int numfile
 	if(result.isval){
 		if(result.type == MAT_INT)
 			fprintf(logfp,"%d",result.vals.i[0]);
-		else
-			fprintf(logfp,"%f",result.vals.f[0]);
+		else{
+			if(result.vals.f[0] == 0)
+				fputs("0.", logfp);
+			else
+				fprintf(logfp,"%Lg",result.vals.f[0]);
+		}
 	}
 	else{
 		if(result.type == MAT_INT)
@@ -185,8 +189,12 @@ void create_log_file(struct timespec call_time, OPERATION operation, int numfile
 			for(int j = 0; j < result.cols; ++j){
 				if(result.type == MAT_INT)
 					fprintf(logfp,"%d",result.vals.i[i*result.cols + j]);
-				else
-					fprintf(logfp,"%f",result.vals.f[i*result.cols + j]);
+				else{
+					if(result.vals.f[i*result.cols + j] == 0)
+						fputs("0.", logfp);
+					else
+						fprintf(logfp,"%Lf",result.vals.f[i*result.cols + j]);
+				}
 				if(i == result.rows - 1 && j == result.cols - 1){
 					break;
 				}

@@ -6,6 +6,7 @@
 //add help flag and ability to display help page when no args given
 //add ability to speed up with the stack rather than using the heap with lower amounts of elements
 //need to be rigorous to check for memory leeks (check every size)
+//add support for integer scalar multiplication
 
 //notes:
 //not freeing memory before exitting as OS should release allocated memory on exit
@@ -100,7 +101,7 @@ int main(int argc, char *argv[])
 			if(strncmp("--sm",argv[i], 4 * sizeof(char)) == 0){
 				operation_args.operation = SCAL_MUL;
 				++i;
-				operation_args.scalar = strtof(argv[i],NULL);
+				operation_args.scalar = strtold(argv[i],NULL);
 				if(operation_args.scalar == 0.0){
 					if(errno == ERANGE){
 						fprintf(stderr, "Element %s outside of range of specification\n", argv[i]);

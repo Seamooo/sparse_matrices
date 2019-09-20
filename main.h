@@ -42,7 +42,7 @@
 #define p() printf("got here\n"); fflush(stdout);
 #define pstr(x) printf("%s = %s\n",#x,x); fflush(stdout);
 #define pint(x) printf("%s = %d\n",#x,x); fflush(stdout);
-#define pfloat(x) printf("%s = %f\n",#x,x); fflush(stdout);
+#define pld(x) printf("%s = %Lf\n",#x,x); fflush(stdout);
 #define phex(x) for(int i = 0; x[i] != '\0'; ++i){printf("%02x ", x[i]);} printf("\n"); fflush(stdout);
 
 typedef enum {
@@ -66,7 +66,7 @@ typedef enum{
 typedef enum {
 	MAT_NONE,
 	MAT_INT,
-	MAT_FLOAT
+	MAT_LDOUBLE
 } MAT_TYPE;
 typedef enum{
 	ERR_NONE,
@@ -88,7 +88,7 @@ typedef struct {
 	int i;
 	int j;
 	union{
-		float f;
+		long double f;
 		int i;
 	} val;
 } coo_elem;
@@ -108,7 +108,7 @@ typedef struct {
 	int cols;
 	int num_vals;
 	union{
-		float *f;
+		long double *f;
 		int *i;
 	} nnz;
 	int *ja;
@@ -123,7 +123,7 @@ typedef struct {
 	int i;
 	int j;
 	union{
-		float f;
+		long double f;
 		int i;
 	} val;
 } bcsr_nnzb;
@@ -143,7 +143,7 @@ typedef struct {
 typedef struct {
 	MAT_TYPE type;
 	union{
-		float **f;
+		long double **f;
 		int **i;
 	} vals;
 	int n;
@@ -153,7 +153,7 @@ typedef struct {
 typedef struct {
 	MAT_TYPE type;
 	union{
-		float **f;
+		long double **f;
 		int **i;
 	} vals;
 	int **col_ind;
@@ -168,7 +168,7 @@ typedef struct{
 	int rows;
 	int cols;
 	union{
-		float *f;
+		long double *f;
 		int *i;
 	} vals;
 } mat_rv;
@@ -178,7 +178,7 @@ typedef struct{
 	FILE *file2;
 	OPERATION operation;
 	FORMAT format;
-	float scalar;
+	long double scalar;
 	bool nothreading;
 	int block_size;
 	int num_threads;

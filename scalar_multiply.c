@@ -1,26 +1,26 @@
 #include "main.h"
 
-mat_rv scalar_multiply_coo_nothreading(coo matrix, float scalar)
+mat_rv scalar_multiply_coo_nothreading(coo matrix, long double scalar)
 {
 	mat_rv rv;
 	struct timespec start, end;
 	get_utc_time(&start);
 	for(int i = 0; i < matrix.length; ++i){
 		if(matrix.type == MAT_INT)
-			matrix.elems[i].val.f = (float)matrix.elems[i].val.i * scalar;
+			matrix.elems[i].val.f = (long double)matrix.elems[i].val.i * scalar;
 		else
 			matrix.elems[i].val.f = matrix.elems[i].val.f * scalar;
-		matrix.elems[i].type = MAT_FLOAT;
+		matrix.elems[i].type = MAT_LDOUBLE;
 	}
 	get_utc_time(&end);
-	matrix.type = MAT_FLOAT;
+	matrix.type = MAT_LDOUBLE;
 	rv = coo_to_mat(matrix);
 	rv.t_process = time_delta(end, start);
 	return rv;
 }
 
 //slow down at this stage
-mat_rv scalar_multiply_coo(coo matrix, float scalar, int thread_count)
+mat_rv scalar_multiply_coo(coo matrix, long double scalar, int thread_count)
 {
 	mat_rv rv;
 	struct timespec start, end;
@@ -29,13 +29,13 @@ mat_rv scalar_multiply_coo(coo matrix, float scalar, int thread_count)
 	#pragma omp parallel for num_threads(thread_count) private(i) shared(rv, matrix, scalar)
 	for(i = 0; i < matrix.length; ++i){
 		if(matrix.type == MAT_INT)
-			matrix.elems[i].val.f = (float)matrix.elems[i].val.i * scalar;
+			matrix.elems[i].val.f = (long double)matrix.elems[i].val.i * scalar;
 		else
 			matrix.elems[i].val.f = matrix.elems[i].val.f * scalar;
-		matrix.elems[i].type = MAT_FLOAT;
+		matrix.elems[i].type = MAT_LDOUBLE;
 	}
 	get_utc_time(&end);
-	matrix.type = MAT_FLOAT;
+	matrix.type = MAT_LDOUBLE;
 	rv = coo_to_mat(matrix);
 	rv.t_process = time_delta(end, start);
 	return rv;
