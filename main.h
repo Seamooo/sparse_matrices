@@ -213,7 +213,6 @@ extern void sort_coo(coo, ORDER);
 
 //timer functions
 extern int get_timezone_offset();
-extern void get_cpu_time(struct timespec*);
 extern void get_utc_time(struct timespec*);
 extern struct timespec time_delta(struct timespec, struct timespec);
 extern struct timespec time_sum(struct timespec, struct timespec);
