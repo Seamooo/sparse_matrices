@@ -106,3 +106,54 @@ mat_rv csr_to_mat(csr matrix)
 	rv.t_construct = time_delta(end, start);
 	return rv;
 }
+
+mat_rv csc_to_mat(csc matrix)
+{
+	mat_rv rv;
+	struct timespec start, end;
+	get_utc_time(&start);
+	rv.error = ERR_NONE;
+	rv.rows = matrix.rows;
+	rv.cols = matrix.cols;
+	if(matrix.type == MAT_INT){
+		rv.type = MAT_INT;
+		if(!(rv.vals.i = (int*)malloc(rv.rows * rv.cols * sizeof(int)))){
+			fprintf(stderr,"Ran out of virtual memory while allocating mat_rv struct\n");
+			exit(EXIT_FAILURE);
+		}
+	}
+	else{
+		rv.type = MAT_LDOUBLE;
+		if(!(rv.vals.f = (long double*)malloc(rv.rows * rv.cols * sizeof(long double)))){
+			fprintf(stderr,"Ran out of virtual memory while allocating mat_rv struct\n");
+			exit(EXIT_FAILURE);
+		}
+	}
+	for(int i = 0; i < rv.cols; ++i){
+		//iterator for nnz/ja
+		int a_i = matrix.ia[i];
+		for(int j = 0; j < rv.rows; ++j){
+			if(a_i < matrix.ia[i + 1]){
+				if(matrix.ja[a_i] == j){
+					if(rv.type == MAT_INT)
+						rv.vals.i[j*rv.cols + i] = matrix.nnz.i[a_i];
+					else
+						rv.vals.f[j*rv.cols + i] = matrix.nnz.f[a_i];
+					a_i++;
+					continue;
+				}
+			}
+			if(rv.type == MAT_INT)
+				rv.vals.i[j*rv.cols + i] = matrix.nnz.i[a_i];
+			else
+				rv.vals.f[j*rv.cols + i] = matrix.nnz.f[a_i];
+		}
+		if(a_i != matrix.ia[i + 1]){
+			rv.error = ERR_DIM_MISSMATCH;
+			break;
+		}
+	}
+	get_utc_time(&end);
+	rv.t_construct = time_delta(end, start);
+	return rv;
+}
