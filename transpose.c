@@ -1,5 +1,27 @@
 #include "main.h"
 
+mat_rv transpose_csr_csc_nothreading(csr matrix){
+	mat_rv rv;
+	rv = csc_to_mat(matrix);
+	//process time is 0 as treating csr as csc results in an already transposed matrix
+	rv.t_process.tv_sec = 0;
+	rv.t_process.tv_nsec = 0;
+	return rv;
+}
+
+mat_rv transpose_csr_csc(csr matrix, int thread_count){
+	mat_rv rv;
+	//later add threaded destruction function to use thread_count
+	//filler function for no compiler warning in the meantime
+	if(thread_count == -1)
+		p();
+	rv = csc_to_mat(matrix);
+	//process time is 0 as treating csr as csc results in an already transposed matrix
+	rv.t_process.tv_sec = 0;
+	rv.t_process.tv_nsec = 0;
+	return rv;
+}
+
 mat_rv transpose_coo_nothreading(coo matrix)
 {
 	mat_rv rv;
@@ -45,10 +67,23 @@ mat_rv transpose_coo(coo matrix, int thread_count)
 mat_rv transpose(OPERATIONARGS *args)
 {
 	mat_rv rv;
-	//default = COO
-	if (args->format == FORM_DEFAULT)
-		args->format = COO;
+	//default CSR -> CSC
 	switch(args->format){
+	case FORM_DEFAULT:{
+		struct timespec start, end;
+		get_utc_time(&start);
+		csr matrix = read_csr(args->file1);
+		get_utc_time(&end);
+		struct timespec delta = time_delta(end, start);
+		if(args->nothreading)
+			rv = transpose_csr_csc_nothreading(matrix);
+		else
+			rv = transpose_csr_csc(matrix, args->num_threads);
+		rv.t_construct = time_sum(rv.t_construct, delta);
+		free_csr(matrix);
+		return rv;
+		break;
+	}
 	case COO:{
 		struct timespec start, end;
 		get_utc_time(&start);
