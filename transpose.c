@@ -45,6 +45,9 @@ mat_rv transpose_coo(coo matrix, int thread_count)
 mat_rv transpose(OPERATIONARGS *args)
 {
 	mat_rv rv;
+	//default = COO
+	if (args->format == FORM_DEFAULT)
+		args->format = COO;
 	switch(args->format){
 	case COO:{
 		struct timespec start, end;

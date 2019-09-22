@@ -82,10 +82,13 @@ mat_rv trace_coo(coo matrix, int thread_count)
 	return rv;
 }
 
-//using trace to buikd every format initially
+//using trace to build every format initially
 mat_rv trace(OPERATIONARGS *args)
 {
 	mat_rv rv;
+	//default = COO
+	if (args->format == FORM_DEFAULT)
+		args->format = COO;
 	switch(args->format){
 	case COO:{
 		struct timespec start, end;

@@ -253,6 +253,9 @@ mat_rv matrix_multiply_coo(coo matrix1, coo matrix2, int thread_count)
 mat_rv matrix_multiply(OPERATIONARGS *args)
 {
 	mat_rv rv;
+	//default = COO
+	if (args->format == FORM_DEFAULT)
+		args->format = COO;
 	switch(args->format){
 	case COO:{
 		struct timespec start, end;

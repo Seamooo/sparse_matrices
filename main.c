@@ -4,6 +4,7 @@
 //add help flag and ability to display help page when no args given
 //add ability to speed up with the stack rather than using the heap with lower amounts of elements
 //need to be rigorous to check for memory leeks (check every size, attempt to index)
+//if there's time change return values to sparse formats and pass time_spec structs
 
 //notes:
 //not freeing memory before exitting as OS should release allocated memory on exit

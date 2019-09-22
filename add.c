@@ -245,7 +245,9 @@ mat_rv addition_coo(coo matrix1, coo matrix2, int thread_count)
 mat_rv addition(OPERATIONARGS *args)
 {
 	mat_rv rv;
-	//not error checking type or format in this function
+	//default = COO
+	if (args->format == FORM_DEFAULT)
+		args->format = COO;
 	switch(args->format){
 	case COO:{
 		struct timespec start, end;

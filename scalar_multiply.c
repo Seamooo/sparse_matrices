@@ -83,7 +83,9 @@ mat_rv scalar_multiply_int_coo(coo matrix, int scalar, int thread_count)
 mat_rv scalar_multiply(OPERATIONARGS *args)
 {
 	mat_rv rv;
-	//not error checking type or format in this function
+	//default = COO
+	if (args->format == FORM_DEFAULT)
+		args->format = COO;
 	switch(args->format){
 	case COO:{
 		struct timespec start, end;
