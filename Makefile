@@ -19,6 +19,7 @@ install:
 	@make float64.in
 	@make int64.in
 	@make sparse_matrix.bin
+	echo "run unittests.sh to check install was successful"
 
 #remember to update when finalised
 unittests.sh:
@@ -36,6 +37,14 @@ unittests.sh:
 	@printf "\"./sparse_matrix.bin --sm 3 -f int64.in --format COO -s --nothreading\"\n" >> unittests.sh
 	@printf "\"./sparse_matrix.bin --sm 3 -f float64.in --format COO -s -t 4\"\n" >> unittests.sh
 	@printf "\"./sparse_matrix.bin --sm 3 -f float64.in --format COO -s --nothreading\"\n" >> unittests.sh
+	@printf "\"./sparse_matrix.bin --sm -3.5 -f int64.in --format COO -s -t 4\"\n" >> unittests.sh
+	@printf "\"./sparse_matrix.bin --sm -3.5 -f int64.in --format COO -s --nothreading\"\n" >> unittests.sh
+	@printf "\"./sparse_matrix.bin --sm -3.5 -f float64.in --format COO -s -t 4\"\n" >> unittests.sh
+	@printf "\"./sparse_matrix.bin --sm -3.5 -f float64.in --format COO -s --nothreading\"\n" >> unittests.sh
+	@printf "\"./sparse_matrix.bin --sm -3 -f int64.in --format COO -s -t 4\"\n" >> unittests.sh
+	@printf "\"./sparse_matrix.bin --sm -3 -f int64.in --format COO -s --nothreading\"\n" >> unittests.sh
+	@printf "\"./sparse_matrix.bin --sm -3 -f float64.in --format COO -s -t 4\"\n" >> unittests.sh
+	@printf "\"./sparse_matrix.bin --sm -3 -f float64.in --format COO -s --nothreading\"\n" >> unittests.sh
 	@printf "#trace tests\n" >> unittests.sh
 	@printf "\"./sparse_matrix.bin --tr -f int64.in --format COO -s -t 4\"\n" >> unittests.sh
 	@printf "\"./sparse_matrix.bin --tr -f int64.in --format COO -s --nothreading\"\n" >> unittests.sh
@@ -58,6 +67,23 @@ unittests.sh:
 	@printf "\"./sparse_matrix.bin --mm -f float64.in float64.in --format COO -s -t 4\"\n" >> unittests.sh
 	@printf "\"./sparse_matrix.bin --mm -f float64.in float64.in --format COO -s --nothreadin" >> unittests.sh
 	@printf "g\"\n" >> unittests.sh
+	@printf "#basic tests -s flag only included not to spam the screen\n" >> unittests.sh
+	@printf "\"./sparse_matrix.bin --sm 3.5 -f int64.in -s\"\n" >> unittests.sh
+	@printf "\"./sparse_matrix.bin --sm 3 -f int64.in -s\"\n" >> unittests.sh
+	@printf "\"./sparse_matrix.bin --sm 3.5 -f float64.in -s\"\n" >> unittests.sh
+	@printf "\"./sparse_matrix.bin --sm 3 -f float64.in -s\"\n" >> unittests.sh
+	@printf "\"./sparse_matrix.bin --sm -3.5 -f int64.in -s\"\n" >> unittests.sh
+	@printf "\"./sparse_matrix.bin --sm -3 -f int64.in -s\"\n" >> unittests.sh
+	@printf "\"./sparse_matrix.bin --sm -3.5 -f float64.in -s\"\n" >> unittests.sh
+	@printf "\"./sparse_matrix.bin --sm -3 -f float64.in -s\"\n" >> unittests.sh
+	@printf "\"./sparse_matrix.bin --tr -f int64.in -s\"\n" >> unittests.sh
+	@printf "\"./sparse_matrix.bin --tr -f float64.in -s\"\n" >> unittests.sh
+	@printf "\"./sparse_matrix.bin --ts -f int64.in  -s\"\n" >> unittests.sh
+	@printf "\"./sparse_matrix.bin --ts -f float64.in -s\"\n" >> unittests.sh
+	@printf "\"./sparse_matrix.bin --ad -f int64.in int64.in -s\"\n" >> unittests.sh
+	@printf "\"./sparse_matrix.bin --ad -f float64.in float64.in -s\"\n" >> unittests.sh
+	@printf "\"./sparse_matrix.bin --mm -f int64.in int64.in -s\"\n" >> unittests.sh
+	@printf "\"./sparse_matrix.bin --mm -f float64.in float64.in -s\"\n" >> unittests.sh
 	@printf ")\n" >> unittests.sh
 	@printf "for ((i=0; i<\$${#TESTS[@]}; ++i));\n" >> unittests.sh
 	@printf "do\n" >> unittests.sh
@@ -69,6 +95,7 @@ unittests.sh:
 	@printf "			echo \"\$${TESTS[i]} \$${red}Error\$${end}\";;\n" >> unittests.sh
 	@printf "	esac;\n" >> unittests.sh
 	@printf "done;\n" >> unittests.sh
+
 
 int64.in:
 	@printf "int\n" > int64.in
