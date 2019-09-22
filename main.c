@@ -1,12 +1,9 @@
 #include "main.h"
 
 //TODO:
-//bug/misunderstood implementation with strtoimax where extremely large values return -1
-//create threaded functions
 //add help flag and ability to display help page when no args given
 //add ability to speed up with the stack rather than using the heap with lower amounts of elements
-//need to be rigorous to check for memory leeks (check every size)
-//add support for integer scalar multiplication
+//need to be rigorous to check for memory leeks (check every size, attempt to index)
 
 //notes:
 //not freeing memory before exitting as OS should release allocated memory on exit
@@ -25,7 +22,6 @@ int main(int argc, char *argv[])
 	operation_args.operation = NO_OPERATION;
 	operation_args.format = FORM_DEFAULT;
 	operation_args.nothreading = false;
-	operation_args.block_size = 0;
 	operation_args.num_threads = -1;
 	operation_args.scalar_type = MAT_NONE;
 	//populating to prevent any weird compiler behaviour
@@ -188,53 +184,14 @@ int main(int argc, char *argv[])
 				}
 				switch(strlen(argv[i])){
 				case 3:
-					if(strncmp("COO",argv[i], 3 * sizeof(char)) == 0){
+					if(strncmp("COO",argv[i], 3 * sizeof(char)) == 0)
 						operation_args.format = COO;
-					}
 					else if(strncmp("CSR",argv[i],3 * sizeof(char)) == 0)
 						operation_args.format = CSR;
 					else if(strncmp("CSC",argv[i],3 * sizeof(char)) == 0)
 						operation_args.format = CSR;
-					else if(strncmp("CSR",argv[i],3 * sizeof(char)) == 0)
-						operation_args.format = CSR;
-					else if(strncmp("CDS",argv[i],3 * sizeof(char)) == 0)
-						operation_args.format = CDS;
 					else if(strncmp("JDS",argv[i],3 * sizeof(char)) == 0)
 						operation_args.format = JDS;
-					else if(strncmp("SKS",argv[i],3 * sizeof(char)) == 0)
-						operation_args.format = SKS;
-					else{
-						fprintf(stderr, "unrecognised format: %s\n",argv[i]);
-						exit(EXIT_FAILURE);
-					}
-					break;
-				case 4:
-					if(strncmp("BCSR",argv[i],4 * sizeof(char)) == 0){
-						operation_args.format = BCSR;
-						++i;
-						bool isnum = true;
-						for(int j = 0; argv[i][j] != '\0'; ++j){
-							if(!(argv[i][j] >= '0' && argv[i][j] <= '9')){
-								isnum = false;
-								break;
-							}
-						}
-						if(!isnum){
-							fprintf(stderr, "No block size specified. Using default: 2\n");
-							continue;
-						}
-						operation_args.block_size = strtoimax(argv[i],NULL,10);
-						if(operation_args.block_size == 0){
-							if(errno == EINVAL){
-								fprintf(stderr,"Conversion error %d when specifying block size\n",errno);
-								exit(EXIT_FAILURE);
-							}
-							if(errno == ERANGE){
-								fprintf(stderr, "Block size out of integer range\n");
-								exit(EXIT_FAILURE);
-							}
-						}
-					}
 					else{
 						fprintf(stderr, "unrecognised format: %s\n",argv[i]);
 						exit(EXIT_FAILURE);
@@ -265,8 +222,8 @@ int main(int argc, char *argv[])
 		++i;
 	}
 	if(operation_args.num_threads == -1 && !operation_args.nothreading){
-		fprintf(stderr,"No number of threads provided\nUsing default num_threads: 2\n");
-		operation_args.num_threads = 2;
+		fprintf(stderr,"Warning no number of threads provided\nUsing default num_threads: 1\n");
+		operation_args.num_threads = 1;
 	}
 	if(operation_args.num_threads != -1 && operation_args.nothreading)
 		fprintf(stderr, "Warning: number of threads specified while using --nothreading flag\n");

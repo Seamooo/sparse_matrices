@@ -58,10 +58,7 @@ typedef enum{
 	COO,
 	CSR,
 	CSC,
-	BCSR,
-	CDS,
-	JDS,
-	SKS
+	JDS
 } FORMAT;
 typedef enum {
 	MAT_NONE,
@@ -119,39 +116,6 @@ typedef struct {
 typedef csr csc;
 typedef struct {
 	MAT_TYPE type;
-	int index;
-	int i;
-	int j;
-	union{
-		long double f;
-		int i;
-	} val;
-} bcsr_nnzb;
-typedef struct {
-	//store rows and columbns for easier reconstruction
-	int rows;
-	int cols;
-	//store type to handle 0 elem case
-	MAT_TYPE type;
-	int num_blocks;
-	int block_size;
-	bcsr_nnzb *blocks;
-	int *entries;
-	int cols_arr_len;
-	int *cols_arr;
-} bcsr;
-typedef struct {
-	MAT_TYPE type;
-	union{
-		long double **f;
-		int **i;
-	} vals;
-	int n;
-	int half_bw_hi;
-	int half_bw_lo;
-} cds;
-typedef struct {
-	MAT_TYPE type;
 	union{
 		long double **f;
 		int **i;
@@ -184,7 +148,6 @@ typedef struct{
 		int i;
 	} scalar;
 	bool nothreading;
-	int block_size;
 	int num_threads;
 } OPERATIONARGS;
 //handle sks later
@@ -207,7 +170,6 @@ extern void free_coo(coo);
 extern coo read_coo(FILE*);
 extern csr read_csr(FILE*);
 extern csc read_csc(FILE*);
-extern bcsr read_bcsr(FILE*, int);
 
 //conversion functions
 extern mat_rv coo_to_mat(coo);
@@ -227,6 +189,5 @@ extern void print_mat_rv(mat_rv);
 extern void print_coo(coo);
 extern void print_csr(csr);
 extern void print_csc(csc);
-extern void print_bcsr(bcsr);
 #endif
 

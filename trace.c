@@ -123,16 +123,6 @@ mat_rv trace(OPERATIONARGS *args)
 		fprintf(stderr, "operation not implemented\n");
 		exit(EXIT_FAILURE);
 	}
-	case BCSR:{
-		struct timespec start, end;
-		get_utc_time(&start);
-		bcsr matrix = read_bcsr(args->file1, args->block_size);
-		get_utc_time(&end);
-		//struct timespec delta = time_delta(end, start);
-		print_bcsr(matrix);
-		fprintf(stderr, "operation not implemented\n");
-		exit(EXIT_FAILURE);
-	}
 	default:
 		fprintf(stderr, "format not implemented\n");
 		exit(EXIT_FAILURE);
