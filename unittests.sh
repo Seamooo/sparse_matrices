@@ -26,6 +26,10 @@ TESTS=(
 "./sparse_matrix.bin --tr -f int64.in --format COO -s --nothreading"
 "./sparse_matrix.bin --tr -f float64.in --format COO -s -t 4"
 "./sparse_matrix.bin --tr -f float64.in --format COO -s --nothreading"
+"./sparse_matrix.bin --tr -f int64.in --format COO -s -t 4"
+"./sparse_matrix.bin --tr -f int64.in --format COO -s --nothreading"
+"./sparse_matrix.bin --tr -f float64.in --format COO -s -t 4"
+"./sparse_matrix.bin --tr -f float64.in --format COO -s --nothreading"
 #transpose tests
 "./sparse_matrix.bin --ts -f int64.in --format COO -s -t 4"
 "./sparse_matrix.bin --ts -f int64.in --format COO -s --nothreading"

@@ -58,7 +58,7 @@ typedef enum{
 	COO,
 	CSR,
 	CSC,
-	JDS
+	CDS,
 } FORMAT;
 typedef enum {
 	MAT_NONE,
@@ -114,14 +114,16 @@ typedef struct {
 } csr;
 //ia_len == cols + 1 for below
 typedef csr csc;
-typedef struct {
+typedef struct{
 	MAT_TYPE type;
-	union{
+	union {
 		long double **f;
 		int **i;
 	} vals;
-	int **col_ind;
-} jds;
+	int n;
+	int half_bw_hi;
+	int half_bw_lo;
+} cds;
 //mat_rv struct will always be returned
 typedef struct{
 	MAT_TYPE type;
@@ -165,6 +167,7 @@ extern mat_rv matrix_multiply(OPERATIONARGS*);
 
 //free mat functions
 extern void free_coo(coo);
+extern void free_csr(csr);
 
 //read mat functions
 extern coo read_coo(FILE*);
@@ -173,6 +176,7 @@ extern csc read_csc(FILE*);
 
 //conversion functions
 extern mat_rv coo_to_mat(coo);
+extern mat_rv csr_to_mat(csr);
 
 //sort functions
 extern void sort_coo(coo, ORDER);

@@ -1,5 +1,6 @@
 #include "main.h"
 
+//return arg1 - arg2
 struct timespec time_delta(struct timespec end, struct timespec start)
 {
 	struct timespec rv;
@@ -17,6 +18,7 @@ struct timespec time_delta(struct timespec end, struct timespec start)
 	return rv;
 }
 
+//return arg1 + arg2
 struct timespec time_sum(struct timespec ts1, struct timespec ts2)
 {
 	struct timespec rv;

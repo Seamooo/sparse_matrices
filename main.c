@@ -5,6 +5,7 @@
 //add ability to speed up with the stack rather than using the heap with lower amounts of elements
 //need to be rigorous to check for memory leeks (check every size, attempt to index)
 //if there's time change return values to sparse formats and pass time_spec structs
+//implement threading for construction and destruction
 
 //notes:
 //not freeing memory before exitting as OS should release allocated memory on exit
@@ -191,8 +192,8 @@ int main(int argc, char *argv[])
 						operation_args.format = CSR;
 					else if(strncmp("CSC",argv[i],3 * sizeof(char)) == 0)
 						operation_args.format = CSR;
-					else if(strncmp("JDS",argv[i],3 * sizeof(char)) == 0)
-						operation_args.format = JDS;
+					else if(strncmp("CDS",argv[i],3 * sizeof(char)) == 0)
+						operation_args.format = CDS;
 					else{
 						fprintf(stderr, "unrecognised format: %s\n",argv[i]);
 						exit(EXIT_FAILURE);
