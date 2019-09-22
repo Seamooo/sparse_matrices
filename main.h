@@ -44,6 +44,7 @@
 #define pint(x) printf("%s = %d\n",#x,x); fflush(stdout);
 #define pld(x) printf("%s = %Lf\n",#x,x); fflush(stdout);
 #define phex(x) for(int i = 0; x[i] != '\0'; ++i){printf("%02x ", x[i]);} printf("\n"); fflush(stdout);
+#define paddr(x) printf("&%s = %p\n", #x, &x);
 
 typedef enum {
 	NO_OPERATION,
@@ -103,6 +104,8 @@ typedef struct {
 	//store rows and cols to reconstruct matrix more easily
 	int rows;
 	int cols;
+	//technically don't need to num_vals as it's
+	//the same as ia[cols]
 	int num_vals;
 	union{
 		long double *f;

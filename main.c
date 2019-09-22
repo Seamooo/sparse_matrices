@@ -6,6 +6,7 @@
 //need to be rigorous to check for memory leeks (check every size, attempt to index)
 //if there's time change return values to sparse formats and pass time_spec structs
 //implement threading for construction and destruction
+//operation_args no longer required to be pointer
 
 //notes:
 //not freeing memory before exitting as OS should release allocated memory on exit
@@ -18,8 +19,6 @@ int main(int argc, char *argv[])
 	struct timespec call_time;
 	get_utc_time(&call_time);
 	int numfiles = 0;
-	//will send address of operation_args to functions to avoid
-	//incompatibility with versions of GCC earlier than 4.4
 	OPERATIONARGS operation_args;
 	operation_args.operation = NO_OPERATION;
 	operation_args.format = FORM_DEFAULT;
