@@ -25,9 +25,9 @@ int main(int argc, char *argv[])
 	operation_args.format = FORM_DEFAULT;
 	operation_args.nothreading = false;
 	operation_args.num_threads = -1;
-	operation_args.scalar_type = MAT_NONE;
+	operation_args.scalar.type = MAT_NONE;
 	//populating to prevent any weird compiler behaviour
-	operation_args.scalar.i = 0;
+	operation_args.scalar.val.i = 0;
 	bool logging = false;
 	bool silence = false;
 	char *filename1 = NULL;
@@ -124,15 +124,15 @@ int main(int argc, char *argv[])
 					}
 				}
 				if(isfloat){
-					operation_args.scalar_type = MAT_LDOUBLE;
-					operation_args.scalar.f = strtold(argv[i],NULL);
-					if(operation_args.scalar.f == 0.0){
+					operation_args.scalar.type = MAT_LDOUBLE;
+					operation_args.scalar.val.f = strtold(argv[i],NULL);
+					if(operation_args.scalar.val.f == 0.0){
 						if(errno == ERANGE){
 							fprintf(stderr, "Element %s outside of range of specification\n", argv[i]);
 							exit(EXIT_FAILURE);
 						}
 					}
-					else if (operation_args.scalar.f == HUGE_VALF || operation_args.scalar.f == (-1)*HUGE_VALF){
+					else if (operation_args.scalar.val.f == HUGE_VALF || operation_args.scalar.val.f == (-1)*HUGE_VALF){
 						if(errno == ERANGE){
 							fprintf(stderr, "Element %s outside of range of specification\n", argv[i]);
 							exit(EXIT_FAILURE);
@@ -140,9 +140,9 @@ int main(int argc, char *argv[])
 					}
 				}
 				else{
-					operation_args.scalar_type = MAT_INT;
-					operation_args.scalar.i = strtoimax(argv[i],NULL,10);
-					if(operation_args.scalar.i == 0){
+					operation_args.scalar.type = MAT_INT;
+					operation_args.scalar.val.i = strtoimax(argv[i],NULL,10);
+					if(operation_args.scalar.val.i == 0){
 						if(errno == EINVAL){
 							fprintf(stderr,"Conversion error %d when specifying scalar\n",errno);
 							exit(EXIT_FAILURE);
@@ -224,7 +224,7 @@ int main(int argc, char *argv[])
 		++i;
 	}
 	if(operation_args.num_threads == -1 && !operation_args.nothreading){
-		fprintf(stderr,"Warning no number of threads provided\nUsing default num_threads: 1\n");
+		fprintf(stderr,"Warning no number of threads provided, using default num_threads: 1\n");
 		operation_args.num_threads = 1;
 	}
 	if(operation_args.num_threads != -1 && operation_args.nothreading)

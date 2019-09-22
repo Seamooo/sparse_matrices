@@ -242,6 +242,7 @@ mat_rv trace_csr(csr matrix, int thread_count)
 	return rv;
 }
 
+//identical behaviour for square matrices (as assumed otherwise errors)
 mat_rv trace_csc_nothreading(csc matrix)
 {
 	return trace_csr_nothreading(matrix);

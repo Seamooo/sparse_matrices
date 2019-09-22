@@ -140,15 +140,19 @@ typedef struct{
 } mat_rv;
 
 typedef struct{
+	MAT_TYPE type;
+	union{
+		long double f;
+		int i;
+	} val;
+} SCALAR;
+
+typedef struct{
 	FILE *file1;
 	FILE *file2;
 	OPERATION operation;
 	FORMAT format;
-	MAT_TYPE scalar_type;
-	union{
-		long double f;
-		int i;
-	} scalar;
+	SCALAR scalar;
 	bool nothreading;
 	int num_threads;
 } OPERATIONARGS;
