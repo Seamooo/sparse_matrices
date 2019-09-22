@@ -39,6 +39,7 @@ mat_rv trace_coo_nothreading(coo matrix)
 	free_coo(result);
 	return rv;
 }
+
 mat_rv trace_coo(coo matrix, int thread_count)
 {
 	mat_rv rv;
@@ -113,22 +114,22 @@ mat_rv trace_csr_nothreading(csr matrix)
 	result.cols = 1;
 	result.num_vals = 1;
 	if(result.type == MAT_INT){
-		if(!(result.nnz.i = malloc(1*sizeof(int)))){
+		if(!(result.nnz.i = (int*)malloc(1*sizeof(int)))){
 			fprintf(stderr, "Ran out of virtual memory while allocating result matrix\n");
 			exit(EXIT_FAILURE);
 		}
 	}
 	else{
-		if(!(result.nnz.f = malloc(1*sizeof(long double)))){
+		if(!(result.nnz.f = (long double*)malloc(1*sizeof(long double)))){
 			fprintf(stderr, "Ran out of virtual memory while allo0cating result matrix\n");
 			exit(EXIT_FAILURE);
 		}
 	}
-	if(!(result.ja = malloc(1*sizeof(int)))){
+	if(!(result.ja = (int*)malloc(1*sizeof(int)))){
 		fprintf(stderr, "Ran out of virtual memory while allocating result matrix\n");
 		exit(EXIT_FAILURE);
 	}
-	if(!(result.ia = malloc(2*sizeof(int)))){
+	if(!(result.ia = (int*)malloc(2*sizeof(int)))){
 		fprintf(stderr, "Ran out of virtual memory while allocating result matrix\n");
 		exit(EXIT_FAILURE);
 	}
@@ -157,6 +158,7 @@ mat_rv trace_csr_nothreading(csr matrix)
 	free_csr(result);
 	return rv;
 }
+
 mat_rv trace_csr(csr matrix, int thread_count)
 {
 	mat_rv rv;
@@ -172,22 +174,22 @@ mat_rv trace_csr(csr matrix, int thread_count)
 	result.cols = 1;
 	result.num_vals = 1;
 	if(result.type == MAT_INT){
-		if(!(result.nnz.i = malloc(1*sizeof(int)))){
+		if(!(result.nnz.i = (int*)malloc(1*sizeof(int)))){
 			fprintf(stderr, "Ran out of virtual memory while allocating result matrix\n");
 			exit(EXIT_FAILURE);
 		}
 	}
 	else{
-		if(!(result.nnz.f = malloc(1*sizeof(long double)))){
+		if(!(result.nnz.f = (long double*)malloc(1*sizeof(long double)))){
 			fprintf(stderr, "Ran out of virtual memory while allo0cating result matrix\n");
 			exit(EXIT_FAILURE);
 		}
 	}
-	if(!(result.ja = malloc(1*sizeof(int)))){
+	if(!(result.ja = (int*)malloc(1*sizeof(int)))){
 		fprintf(stderr, "Ran out of virtual memory while allocating result matrix\n");
 		exit(EXIT_FAILURE);
 	}
-	if(!(result.ia = malloc(2*sizeof(int)))){
+	if(!(result.ia = (int*)malloc(2*sizeof(int)))){
 		fprintf(stderr, "Ran out of virtual memory while allocating result matrix\n");
 		exit(EXIT_FAILURE);
 	}
@@ -240,6 +242,15 @@ mat_rv trace_csr(csr matrix, int thread_count)
 	return rv;
 }
 
+mat_rv trace_csc_nothreading(csc matrix)
+{
+	return trace_csr_nothreading(matrix);
+}
+mat_rv trace_csc(csc matrix, int thread_count)
+{
+	return trace_csr(matrix, thread_count);
+}
+
 //using trace to build every format initially
 mat_rv trace(OPERATIONARGS *args)
 {
@@ -278,16 +289,23 @@ mat_rv trace(OPERATIONARGS *args)
 		free_csr(matrix);
 		rv.isval = true;
 		return rv;
+		break;
 	}
 	case CSC:{
 		struct timespec start, end;
 		get_utc_time(&start);
 		csc matrix = read_csc(args->file1);
 		get_utc_time(&end);
-		//struct timespec delta = time_delta(end, start);
-		print_csc(matrix);
-		fprintf(stderr, "operation not implemented\n");
-		exit(EXIT_FAILURE);
+		struct timespec delta = time_delta(end, start);
+		if(args->nothreading)
+			rv = trace_csc_nothreading(matrix);
+		else
+			rv = trace_csc(matrix, args->num_threads);
+		rv.t_construct = time_sum(rv.t_construct, delta);
+		free_csc(matrix);
+		rv.isval = true;
+		return rv;
+		break;
 	}
 	default:
 		fprintf(stderr, "format not implemented\n");

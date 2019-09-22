@@ -168,6 +168,7 @@ extern mat_rv matrix_multiply(OPERATIONARGS*);
 //free mat functions
 extern void free_coo(coo);
 extern void free_csr(csr);
+extern void free_csc(csc);
 
 //read mat functions
 extern coo read_coo(FILE*);
