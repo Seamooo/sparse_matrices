@@ -44,7 +44,7 @@
 #define pint(x) printf("%s = %d\n",#x,x); fflush(stdout);
 #define pld(x) printf("%s = %Lf\n",#x,x); fflush(stdout);
 #define phex(x) for(int i = 0; x[i] != '\0'; ++i){printf("%02x ", x[i]);} printf("\n"); fflush(stdout);
-#define paddr(x) printf("&%s = %p\n", #x, &x);
+#define paddr(x) printf("&%s = %p\n", #x, &x);fflush(stdout);
 
 typedef enum {
 	NO_OPERATION,

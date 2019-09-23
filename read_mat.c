@@ -334,9 +334,9 @@ csc read_csc(FILE *file)
 				temp_mat_vals.f[i][j] = read_float_token(line, &start);
 		}
 	}
-	rv.ia = 0;
+	rv.ia[0] = 0;
 	for(int i = 0; i < rv.cols; ++i){
-		int nnz_count = 9;
+		int nnz_count = 0;
 		for(int j = 0; j < rv.rows; ++j){
 			if(rv.type == MAT_INT){
 				if(temp_mat_vals.i[j][i] == 0)

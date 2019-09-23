@@ -339,7 +339,6 @@ mat_rv scalar_multiply(OPERATIONARGS *args)
 			rv = scalar_multiply_coo(matrix, &(args->scalar), args->num_threads);
 		rv.t_construct = time_sum(rv.t_construct, delta);
 		free_coo(matrix);
-		rv.isval = false;
 		return rv;
 		break;
 	}
@@ -355,7 +354,6 @@ mat_rv scalar_multiply(OPERATIONARGS *args)
 			rv = scalar_multiply_csr(matrix, &(args->scalar), args->num_threads);
 		rv.t_construct = time_sum(rv.t_construct, delta);
 		free_csr(matrix);
-		rv.isval = false;
 		return rv;
 		break;
 	}
@@ -371,7 +369,6 @@ mat_rv scalar_multiply(OPERATIONARGS *args)
 			rv = scalar_multiply_csc(matrix, &(args->scalar), args->num_threads);
 		rv.t_construct = time_sum(rv.t_construct, delta);
 		free_csc(matrix);
-		rv.isval = false;
 		return rv;
 		break;
 	}

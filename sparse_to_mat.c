@@ -3,9 +3,12 @@
 mat_rv coo_to_mat(coo matrix)
 {
 	mat_rv rv;
+	struct timespec start, end;
+	get_utc_time(&start);
 	rv.error = ERR_NONE;
 	rv.rows = matrix.rows;
 	rv.cols = matrix.cols;
+	rv.isval = false;
 	if(matrix.type == MAT_INT){
 		rv.type = MAT_INT;
 		if(!(rv.vals.i = (int*)malloc(rv.rows * rv.cols * sizeof(int)))){
@@ -20,8 +23,6 @@ mat_rv coo_to_mat(coo matrix)
 			exit(EXIT_FAILURE);
 		}
 	}
-	struct timespec start, end;
-	get_utc_time(&start);
 	for(int i = 0; i < rv.rows; ++i){
 		for(int j = 0; j < rv.cols; ++j){
 			if (rv.type == MAT_INT)
@@ -61,6 +62,7 @@ mat_rv csr_to_mat(csr matrix)
 	mat_rv rv;
 	struct timespec start, end;
 	get_utc_time(&start);
+	rv.isval = false;
 	rv.error = ERR_NONE;
 	rv.rows = matrix.rows;
 	rv.cols = matrix.cols;
@@ -112,6 +114,7 @@ mat_rv csc_to_mat(csc matrix)
 	mat_rv rv;
 	struct timespec start, end;
 	get_utc_time(&start);
+	rv.isval = false;
 	rv.error = ERR_NONE;
 	rv.rows = matrix.rows;
 	rv.cols = matrix.cols;
@@ -144,9 +147,9 @@ mat_rv csc_to_mat(csc matrix)
 				}
 			}
 			if(rv.type == MAT_INT)
-				rv.vals.i[j*rv.cols + i] = matrix.nnz.i[a_i];
+				rv.vals.i[j*rv.cols + i] = 0;
 			else
-				rv.vals.f[j*rv.cols + i] = matrix.nnz.f[a_i];
+				rv.vals.f[j*rv.cols + i] = 0.0;
 		}
 		if(a_i != matrix.ia[i + 1]){
 			rv.error = ERR_DIM_MISSMATCH;

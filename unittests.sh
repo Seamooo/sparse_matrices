@@ -1,5 +1,5 @@
 #colours
-red=$'\e[0;31m'
+red=$'\e[0;91m'
 green=$'\e[1;32m'
 end=$'\e[0m'
 
@@ -21,6 +21,38 @@ TESTS=(
 "./sparse_matrix.bin --sm -3 -f int64.in --format COO -s --nothreading"
 "./sparse_matrix.bin --sm -3 -f float64.in --format COO -s -t 4"
 "./sparse_matrix.bin --sm -3 -f float64.in --format COO -s --nothreading"
+"./sparse_matrix.bin --sm 3.5 -f int64.in --format CSR -s -t 4"
+"./sparse_matrix.bin --sm 3.5 -f int64.in --format CSR -s --nothreading"
+"./sparse_matrix.bin --sm 3.5 -f float64.in --format CSR -s -t 4"
+"./sparse_matrix.bin --sm 3.5 -f float64.in --format CSR -s --nothreading"
+"./sparse_matrix.bin --sm 3 -f int64.in --format CSR -s -t 4"
+"./sparse_matrix.bin --sm 3 -f int64.in --format CSR -s --nothreading"
+"./sparse_matrix.bin --sm 3 -f float64.in --format CSR -s -t 4"
+"./sparse_matrix.bin --sm 3 -f float64.in --format CSR -s --nothreading"
+"./sparse_matrix.bin --sm -3.5 -f int64.in --format CSR -s -t 4"
+"./sparse_matrix.bin --sm -3.5 -f int64.in --format CSR -s --nothreading"
+"./sparse_matrix.bin --sm -3.5 -f float64.in --format CSR -s -t 4"
+"./sparse_matrix.bin --sm -3.5 -f float64.in --format CSR -s --nothreading"
+"./sparse_matrix.bin --sm -3 -f int64.in --format CSR -s -t 4"
+"./sparse_matrix.bin --sm -3 -f int64.in --format CSR -s --nothreading"
+"./sparse_matrix.bin --sm -3 -f float64.in --format CSR -s -t 4"
+"./sparse_matrix.bin --sm -3 -f float64.in --format CSR -s --nothreading"
+"./sparse_matrix.bin --sm 3.5 -f int64.in --format CSC -s -t 4"
+"./sparse_matrix.bin --sm 3.5 -f int64.in --format CSC -s --nothreading"
+"./sparse_matrix.bin --sm 3.5 -f float64.in --format CSC -s -t 4"
+"./sparse_matrix.bin --sm 3.5 -f float64.in --format CSC -s --nothreading"
+"./sparse_matrix.bin --sm 3 -f int64.in --format CSC -s -t 4"
+"./sparse_matrix.bin --sm 3 -f int64.in --format CSC -s --nothreading"
+"./sparse_matrix.bin --sm 3 -f float64.in --format CSC -s -t 4"
+"./sparse_matrix.bin --sm 3 -f float64.in --format CSC -s --nothreading"
+"./sparse_matrix.bin --sm -3.5 -f int64.in --format CSC -s -t 4"
+"./sparse_matrix.bin --sm -3.5 -f int64.in --format CSC -s --nothreading"
+"./sparse_matrix.bin --sm -3.5 -f float64.in --format CSC -s -t 4"
+"./sparse_matrix.bin --sm -3.5 -f float64.in --format CSC -s --nothreading"
+"./sparse_matrix.bin --sm -3 -f int64.in --format CSC -s -t 4"
+"./sparse_matrix.bin --sm -3 -f int64.in --format CSC -s --nothreading"
+"./sparse_matrix.bin --sm -3 -f float64.in --format CSC -s -t 4"
+"./sparse_matrix.bin --sm -3 -f float64.in --format CSC -s --nothreading"
 #trace tests
 "./sparse_matrix.bin --tr -f int64.in --format COO -s -t 4"
 "./sparse_matrix.bin --tr -f int64.in --format COO -s --nothreading"

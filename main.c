@@ -190,7 +190,7 @@ int main(int argc, char *argv[])
 					else if(strncmp("CSR",argv[i],3 * sizeof(char)) == 0)
 						operation_args.format = CSR;
 					else if(strncmp("CSC",argv[i],3 * sizeof(char)) == 0)
-						operation_args.format = CSR;
+						operation_args.format = CSC;
 					else if(strncmp("CDS",argv[i],3 * sizeof(char)) == 0)
 						operation_args.format = CDS;
 					else{
