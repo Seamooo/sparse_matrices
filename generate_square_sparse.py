@@ -1,6 +1,9 @@
+from __future__ import print_function
 import sys
 import os
 from random import random
+
+#usage python generate_square_sparse <#powerof2> <type> [filename] [probability] [max_elem_val]
 
 if len(sys.argv) < 2:
 	print('expected power of 2 as argument')
