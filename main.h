@@ -4,10 +4,14 @@
 #ifdef _WIN32
 #define OS "WINDOWS"
 
-#elif defined __LINUX__
+#elif defined __linux__
 #define OS "LINUX"
 #ifndef __unix__
 #define __unix__
+#endif
+//need to specify environment for timezone
+#ifndef _DEFAULT_SORUCE
+#define _DEFAULT_SORUCE
 #endif
 
 #elif defined __APPLE__ && __MACH__
@@ -44,7 +48,7 @@
 #define pint(x) printf("%s = %d\n",#x,x); fflush(stdout);
 #define pld(x) printf("%s = %Lf\n",#x,x); fflush(stdout);
 #define phex(x) for(int i = 0; x[i] != '\0'; ++i){printf("%02x ", x[i]);} printf("\n"); fflush(stdout);
-#define paddr(x) printf("&%s = %p\n", #x, &x);fflush(stdout);
+#define paddr(x) printf("%s = %p\n", #x, (void*)x); fflush(stdout);
 
 typedef enum {
 	NO_OPERATION,

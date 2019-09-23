@@ -137,7 +137,7 @@ do
 	case "$?" in
 		0)
 			echo "${TESTS[i]} ${green}Success${end}";;
-		1)
+		*)
 			echo "${TESTS[i]} ${red}Error${end}";;
 	esac;
 done;

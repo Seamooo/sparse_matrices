@@ -1,6 +1,255 @@
 #include "main.h"
 
-//nothreading 100% works
+mat_rv matrix_multiply_csr_csc_nothreading(csr matrix1, csr matrix2)
+{
+	mat_rv rv;
+	if(matrix1.cols != matrix2.rows){
+		rv.error = ERR_WRONG_DIM;
+		return rv;
+	}
+	if(matrix1.type != matrix2.type){
+		rv.error = ERR_TYPE_MISSMATCH;
+		return rv;
+	}
+	struct timespec start, end;
+	get_utc_time(&start);
+	csr result;
+	result.rows = matrix1.rows;
+	result.cols = matrix2.cols;
+	result.type = matrix1.type;
+	result.num_vals = 0;
+	if(!(result.ja = (int*)malloc(result.rows*result.cols*sizeof(int)))){
+		fprintf(stderr, "Ran out of virtual memory while allocating result matrix\n");
+		exit(EXIT_FAILURE);
+	}
+	if(result.type == MAT_INT){
+		if(!(result.nnz.i = (int*)malloc(result.rows*result.cols*sizeof(int)))){
+			fprintf(stderr, "Ran out of virtual memory while allocating result matrix\n");
+			exit(EXIT_FAILURE);
+		}
+	}
+	else{
+		if(!(result.nnz.f = (long double*)malloc(result.rows*result.cols*sizeof(long double)))){
+			fprintf(stderr, "Ran out of virtual memory while allocating result matrix\n");
+			exit(EXIT_FAILURE);
+		}
+	}
+	if(!(result.ia = (int*)malloc(result.rows*result.cols*sizeof(int)))){
+		fprintf(stderr, "Ran out of virtual memory while allocating result matrix\n");
+	}
+	result.ia[0] = 0;
+	for(int i = 0; i < result.rows; ++i){
+		result.ia[i + 1] = result.ia[i];
+		for(int j = 0; j < result.cols; ++j){
+			int mat1_i = matrix1.ia[i];
+			int mat2_i = matrix2.ia[j];
+			union{
+				int i;
+				long double f;
+			} val;
+			if (result.type == MAT_INT)
+				val.i = 0;
+			else
+				val.f = 0.0;
+			while(mat1_i < matrix1.ia[i + 1] && mat2_i < matrix2.ia[j + 1]){
+
+				if(matrix1.ja[mat1_i] == matrix2.ja[mat2_i]){
+					if(result.type == MAT_INT)
+						val.i += matrix1.nnz.i[mat1_i] * matrix2.nnz.i[mat2_i];
+					else
+						val.f += matrix1.nnz.f[mat1_i] * matrix2.nnz.f[mat2_i];
+					++mat1_i;
+					++mat2_i;
+				}
+				else if(matrix1.ja[mat1_i] > matrix2.ja[mat2_i])
+					++mat2_i;
+				else
+					++mat1_i;
+			}
+			if(result.type == MAT_INT){
+				if(val.i == 0)
+					continue;
+			}
+			else{
+				if(val.f == 0.0)
+					continue;
+			}
+			result.ja[result.ia[i + 1]] = j;
+			if(result.type == MAT_INT)
+				result.nnz.i[result.ia[i + 1]] = val.i;
+			else
+				result.nnz.f[result.ia[i + 1]] = val.f;
+			result.ia[i + 1]++;
+		}
+	}
+	result.num_vals = result.ia[result.rows];
+	get_utc_time(&end);
+	print_csr(result);
+	rv = csr_to_mat(result);
+	rv.t_process = time_delta(end, start);
+	free_csr(result);
+	return rv;
+}
+
+mat_rv matrix_multiply_csr_csc(csr matrix1, csr matrix2, int thread_count)
+{
+	mat_rv rv;
+	if(matrix1.cols != matrix2.rows){
+		rv.error = ERR_WRONG_DIM;
+		return rv;
+	}
+	if(matrix1.type != matrix2.type){
+		rv.error = ERR_TYPE_MISSMATCH;
+		return rv;
+	}
+	struct timespec start, end;
+	get_utc_time(&start);
+	csr result;
+	result.rows = matrix1.rows;
+	result.cols = matrix2.cols;
+	result.type = matrix1.type;
+	result.num_vals = 0;
+	union{
+		int **i;
+		long double **f;
+	} local_nnzs;
+	int **local_jas;
+	if(result.type == MAT_INT){
+		if(!(local_nnzs.i = (int**)malloc(result.rows*sizeof(int *)))){
+			fprintf(stderr, "Ran out of virtual memory while allocating result matrix\n");
+			exit(EXIT_FAILURE);
+		}
+		for(int i = 0; i < result.rows; ++i){
+			if(!(local_nnzs.i[i] = (int*)malloc(result.cols*sizeof(int)))){
+				fprintf(stderr, "Ran out of virtual memory while allocating result matrix\n");
+				exit(EXIT_FAILURE);
+			}
+		}
+	}
+	else{
+		if(!(local_nnzs.f = (long double**)malloc(result.rows*sizeof(long double *)))){
+			fprintf(stderr, "Ran out of virtual memory while allocating result matrix\n");
+			exit(EXIT_FAILURE);
+		}
+		for(int i = 0; i < result.rows; ++i){
+			if(!(local_nnzs.f[i] = (long double*)malloc(result.cols*sizeof(long double)))){
+				fprintf(stderr, "Ran out of virtual memory while allocating result matrix\n");
+				exit(EXIT_FAILURE);
+			}
+		}
+	}
+	if(!(local_jas = (int**)malloc(result.rows*sizeof(int *)))){
+		fprintf(stderr, "Ran out of virtual memory while allocating result matrix\n");
+		exit(EXIT_FAILURE);
+	}
+	for(int i = 0; i < result.rows; ++i){
+		if(!(local_jas[i] = (int*)malloc(result.cols*sizeof(int)))){
+			fprintf(stderr, "Ran out of virtual memory while allocating result matrix\n");
+			exit(EXIT_FAILURE);
+		}
+	}
+	//using result.ia to store length of each row then iterate through at end
+	if(!(result.ia = (int*)calloc(result.rows + 1, sizeof(int)))){
+		fprintf(stderr, "Ran out of virtual memory while allocating result matrix\n");
+		exit(EXIT_FAILURE);
+	}
+	int i;
+	#pragma omp parallel num_threads(thread_count) shared(matrix1, matrix2, result, local_nnzs, local_jas)
+	{
+		//store type on the local stack
+		MAT_TYPE local_type = result.type;
+		#pragma omp for private(i)
+		for(i = 0; i < result.rows; ++i){
+			for(int j = 0; j < result.cols; ++j){
+				int mat1_i = matrix1.ia[i];
+				int mat2_i = matrix2.ia[j];
+				union{
+					int i;
+					long double f;
+				} val;
+				if (result.type == MAT_INT)
+					val.i = 0;
+				else
+					val.f = 0.0;
+				while(mat1_i < matrix1.ia[i + 1] && mat2_i < matrix2.ia[j + 1]){
+					if(matrix1.ja[mat1_i] == matrix2.ja[mat2_i]){
+						if(local_type == MAT_INT)
+							val.i += matrix1.nnz.i[mat1_i] * matrix2.nnz.i[mat2_i];
+						else
+							val.f += matrix1.nnz.f[mat1_i] * matrix2.nnz.f[mat2_i];
+						++mat1_i;
+						++mat2_i;
+					}
+					else if(matrix1.ja[mat1_i] > matrix2.ja[mat2_i])
+						++mat2_i;
+					else
+						++mat1_i;
+				}
+				if(local_type == MAT_INT){
+					if(val.i == 0)
+						continue;
+				}
+				else{
+					if(val.f == 0.0)
+						continue;
+				}
+				local_jas[i][result.ia[i + 1]] = j;
+				if(local_type == MAT_INT)
+					local_nnzs.i[i][result.ia[i + 1]] = val.i;
+				else
+					local_nnzs.f[i][result.ia[i + 1]] = val.f;
+				result.ia[i + 1]++;
+			}
+		}
+	}
+	for(int i = 1; i < result.rows + 1; ++i)
+		result.num_vals += result.ia[i];
+	if(result.type == MAT_INT){
+		if(!(result.nnz.i = (int*)malloc(result.num_vals * sizeof(int)))){
+			fprintf(stderr, "Ran out of virtual memory while allocating result matrix\n");
+			exit(EXIT_FAILURE);
+		}
+	}
+	else{
+		if(!(result.nnz.f = (long double*)malloc(result.num_vals * sizeof(long double)))){
+			fprintf(stderr, "Ran out of virtual memory while allocating result matrix\n");
+			exit(EXIT_FAILURE);
+		}
+	}
+	if(!(result.ja = (int*)malloc(result.num_vals * sizeof(int)))){
+		fprintf(stderr, "Ran out of virtual memory while allocating result matrix\n");
+		exit(EXIT_FAILURE);
+	}
+	//can't parallelise this as it has previous dependencies
+	//result.ia[i + 1] is storing length of row
+	//end of the loop sets it to store actual ia val
+	for(int i = 0; i < result.rows; ++i){
+		if(result.ia[i + 1] > 0){
+			if(result.type == MAT_INT){
+				memcpy(&result.nnz.i[result.ia[i]],local_nnzs.i[i], result.ia[i + 1] * sizeof(int));
+				free(local_nnzs.i[i]);
+			}
+			else{
+				memcpy(&result.nnz.f[result.ia[i]],local_nnzs.f[i], result.ia[i + 1] * sizeof(long double));
+				free(local_nnzs.f[i]);
+			}
+			memcpy(&result.ja[result.ia[i]], local_jas[i], result.ia[i + 1] * sizeof(int));
+			free(local_jas[i]);
+		}
+		result.ia[i + 1] += result.ia[i];
+	}
+	free(local_jas);
+	if(result.type == MAT_INT)
+		free(local_nnzs.i);
+	else
+		free(local_nnzs.f);
+	get_utc_time(&end);
+	rv = csr_to_mat(result);
+	rv.t_process = time_delta(end, start);
+	free_csr(result);
+	return rv;
+}
+
 mat_rv matrix_multiply_coo_nothreading(coo matrix1, coo matrix2)
 {
 	mat_rv rv;
@@ -23,7 +272,7 @@ mat_rv matrix_multiply_coo_nothreading(coo matrix1, coo matrix2)
 	result.length = 0;
 	int size = MALLOCINIT;
 	if(!(result.elems = malloc(size * sizeof(coo_elem)))){
-		fprintf(stderr, "Ran out of virtual memory while allocating result matrix");
+		fprintf(stderr, "Ran out of virtual memory while allocating result matrix\n");
 		exit(EXIT_FAILURE);
 	}
 	int matrix1_i = 0;
@@ -70,7 +319,7 @@ mat_rv matrix_multiply_coo_nothreading(coo matrix1, coo matrix2)
 				if(result.length == size){
 					size *= 2;
 					if(!(result.elems = realloc(result.elems, size * sizeof(coo_elem)))){
-						fprintf(stderr, "Ran out of virtual memory while allocating result matrix");
+						fprintf(stderr, "Ran out of virtual memory while allocating result matrix\n");
 						exit(EXIT_FAILURE);
 					}
 				}
@@ -102,6 +351,7 @@ mat_rv matrix_multiply_coo_nothreading(coo matrix1, coo matrix2)
 	return rv;
 }
 
+//check to see whether adding some vars to the local stack gives a speedup
 mat_rv matrix_multiply_coo(coo matrix1, coo matrix2, int thread_count)
 {
 	mat_rv rv;
@@ -253,10 +503,25 @@ mat_rv matrix_multiply_coo(coo matrix1, coo matrix2, int thread_count)
 mat_rv matrix_multiply(OPERATIONARGS *args)
 {
 	mat_rv rv;
-	//default = COO
-	if (args->format == FORM_DEFAULT)
-		args->format = COO;
+	//default = csr * csc
 	switch(args->format){
+	case FORM_DEFAULT:{
+		struct timespec start, end;
+		get_utc_time(&start);
+		csr matrix1 = read_csr(args->file1);
+		csc matrix2 = read_csc(args->file2);
+		get_utc_time(&end);
+		struct timespec delta = time_delta(end, start);
+		if(args->nothreading)
+			rv = matrix_multiply_csr_csc_nothreading(matrix1, matrix2);
+		else
+			rv = matrix_multiply_csr_csc(matrix1, matrix2, args->num_threads);
+		rv.t_construct = time_sum(rv.t_construct, delta);
+		free_csr(matrix1);
+		free_csc(matrix2);
+		return rv;
+		break;
+	}
 	case COO:{
 		struct timespec start, end;
 		get_utc_time(&start);
