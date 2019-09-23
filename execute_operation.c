@@ -2,7 +2,7 @@
 
 mat_rv execute_operation(OPERATIONARGS *args){
 
-	//handle defaults in the execute_operation functions due to CSR*CSC default
+	//handle defaults in the execute_operation functions due to CSR,CSC default
 	switch(args->operation){
 	case SCAL_MUL:
 		return scalar_multiply(args);

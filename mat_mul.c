@@ -500,6 +500,292 @@ mat_rv matrix_multiply_coo(coo matrix1, coo matrix2, int thread_count)
 	return rv;
 }
 
+mat_rv matrix_multiply_csr_nothreading(csr matrix1, csr matrix2)
+{
+	mat_rv rv;
+	if(matrix1.cols != matrix2.rows){
+		rv.error = ERR_WRONG_DIM;
+		return rv;
+	}
+	if(matrix1.type != matrix2.type){
+		rv.error = ERR_TYPE_MISSMATCH;
+		return rv;
+	}
+	//transpose matrix2 then treat it as a csc
+	struct timespec start, end;
+	get_utc_time(&start);
+	csc transposed_mat;
+	transposed_mat.cols = matrix2.rows;
+	transposed_mat.rows = matrix2.cols;
+	transposed_mat.type = matrix2.type;
+	transposed_mat.num_vals = matrix2.num_vals;
+	if(!(transposed_mat.ia = (int*)calloc(transposed_mat.rows + 1, sizeof(int)))){
+		fprintf(stderr, "Ran out of virtual memory while allocating transposed_mat matrix2\n");
+		exit(EXIT_FAILURE);
+	}
+	if(!(transposed_mat.ja = (int*)malloc(transposed_mat.num_vals*sizeof(int)))){
+		fprintf(stderr, "Ran out of virtual memory while allocating transposed_mat matrix2\n");
+		exit(EXIT_FAILURE);
+	}
+	if(transposed_mat.type == MAT_INT){
+		if(!(transposed_mat.nnz.i = (int*)malloc(transposed_mat.num_vals*sizeof(int)))){
+			fprintf(stderr, "Ran out of virtual memory while allocating transposed_mat matrix2\n");
+			exit(EXIT_FAILURE);
+		}
+	}
+	else{
+		if(!(transposed_mat.nnz.f = (long double*)malloc(transposed_mat.num_vals*sizeof(long double)))){
+			fprintf(stderr, "Ran out of virtual memory while allocating transposed_mat matrix2\n");
+			exit(EXIT_FAILURE);
+		}
+	}
+	//creating a new array to contain lengths so don't have to search for
+	//next nonzero element and make complexity n^2
+	int *col_lens;
+	if(!(col_lens = (int*)calloc(transposed_mat.cols, sizeof(int)))){
+		fprintf(stderr, "Ran out of virtual memory while allocating transposed_mat matrix2\n");
+		exit(EXIT_FAILURE);
+	}
+	//count num_vals per row
+	for(int i = 0; i < matrix2.num_vals; ++i)
+		transposed_mat.ia[matrix2.ja[i] + 1]++;
+	for(int i = 0; i < transposed_mat.rows + 1; ++i)
+		transposed_mat.ia[i+1] += transposed_mat.ia[i];
+	for(int i = 0; i < matrix2.rows; ++i){
+		for(int j = matrix2.ia[i]; j < matrix2.ia[i + 1]; ++j){
+			//take the ia from whatever column it is currently + col_len as
+			//we're iterating from smallest row to largest row
+			transposed_mat.ja[transposed_mat.ia[matrix2.ja[j]]+ col_lens[matrix2.ja[j]]] = i;
+			if(transposed_mat.type == MAT_INT)
+				transposed_mat.nnz.i[transposed_mat.ia[matrix2.ja[j]] + col_lens[matrix2.ja[j]]] = matrix2.nnz.i[j];
+			else
+				transposed_mat.nnz.f[transposed_mat.ia[matrix2.ja[j]] + col_lens[matrix2.ja[j]]] = matrix2.nnz.f[j];
+			col_lens[matrix2.ja[j]]++;
+		}
+	}
+	free(col_lens);
+	get_utc_time(&end);
+	rv = matrix_multiply_csr_csc_nothreading(matrix1, transposed_mat);
+	struct timespec delta = time_delta(end, start);
+	rv.t_process = time_sum(rv.t_process, delta);
+	free_csc(transposed_mat);
+	return rv;
+}
+
+mat_rv matrix_multiply_csr(csr matrix1, csr matrix2, int thread_count)
+{
+	mat_rv rv;
+	if(matrix1.cols != matrix2.rows){
+		rv.error = ERR_WRONG_DIM;
+		return rv;
+	}
+	if(matrix1.type != matrix2.type){
+		rv.error = ERR_TYPE_MISSMATCH;
+		return rv;
+	}
+	//transpose matrix2 then treat it as a csc
+	struct timespec start, end;
+	get_utc_time(&start);
+	csc transposed_mat;
+	transposed_mat.cols = matrix2.rows;
+	transposed_mat.rows = matrix2.cols;
+	transposed_mat.type = matrix2.type;
+	transposed_mat.num_vals = matrix2.num_vals;
+	if(!(transposed_mat.ia = (int*)calloc(transposed_mat.rows + 1, sizeof(int)))){
+		fprintf(stderr, "Ran out of virtual memory while allocating transposed_mat matrix2\n");
+		exit(EXIT_FAILURE);
+	}
+	if(!(transposed_mat.ja = (int*)malloc(transposed_mat.num_vals*sizeof(int)))){
+		fprintf(stderr, "Ran out of virtual memory while allocating transposed_mat matrix2\n");
+		exit(EXIT_FAILURE);
+	}
+	if(transposed_mat.type == MAT_INT){
+		if(!(transposed_mat.nnz.i = (int*)malloc(transposed_mat.num_vals*sizeof(int)))){
+			fprintf(stderr, "Ran out of virtual memory while allocating transposed_mat matrix2\n");
+			exit(EXIT_FAILURE);
+		}
+	}
+	else{
+		if(!(transposed_mat.nnz.f = (long double*)malloc(transposed_mat.num_vals*sizeof(long double)))){
+			fprintf(stderr, "Ran out of virtual memory while allocating transposed_mat matrix2\n");
+			exit(EXIT_FAILURE);
+		}
+	}
+	//creating a new array to contain lengths so don't have to search for
+	//next nonzero element and make complexity n^2
+	int *col_lens;
+	if(!(col_lens = (int*)calloc(transposed_mat.cols, sizeof(int)))){
+		fprintf(stderr, "Ran out of virtual memory while allocating transposed_mat matrix2\n");
+		exit(EXIT_FAILURE);
+	}
+	//count num_vals per row (can't be parallelised)
+	for(int i = 0; i < matrix2.num_vals; ++i)
+		transposed_mat.ia[matrix2.ja[i] + 1]++;
+	for(int i = 0; i < transposed_mat.rows + 1; ++i)
+		transposed_mat.ia[i+1] += transposed_mat.ia[i];
+	//below can't be parallelised due to requiring iterator go by smallest
+	//row to largest row and random access dependancies
+	for(int i = 0; i < matrix2.rows; ++i){
+		for(int j = matrix2.ia[i]; j < matrix2.ia[i + 1]; ++j){
+			//take the ia from whatever column it is currently + col_len as
+			//we're iterating from smallest row to largest row
+			transposed_mat.ja[transposed_mat.ia[matrix2.ja[j]]+ col_lens[matrix2.ja[j]]] = i;
+			if(transposed_mat.type == MAT_INT)
+				transposed_mat.nnz.i[transposed_mat.ia[matrix2.ja[j]] + col_lens[matrix2.ja[j]]] = matrix2.nnz.i[j];
+			else
+				transposed_mat.nnz.f[transposed_mat.ia[matrix2.ja[j]] + col_lens[matrix2.ja[j]]] = matrix2.nnz.f[j];
+			col_lens[matrix2.ja[j]]++;
+		}
+	}
+	free(col_lens);
+	get_utc_time(&end);
+	rv = matrix_multiply_csr_csc(matrix1, transposed_mat, thread_count);
+	struct timespec delta = time_delta(end, start);
+	rv.t_process = time_sum(rv.t_process, delta);
+	free_csc(transposed_mat);
+	return rv;
+}
+
+mat_rv matrix_multiply_csc_nothreading(csc matrix1, csc matrix2)
+{
+	mat_rv rv;
+	if(matrix1.cols != matrix2.rows){
+		rv.error = ERR_WRONG_DIM;
+		return rv;
+	}
+	if(matrix1.type != matrix2.type){
+		rv.error = ERR_TYPE_MISSMATCH;
+		return rv;
+	}
+	//transpose matrix1 then treat it as a csr
+	struct timespec start, end;
+	get_utc_time(&start);
+	csr transposed_mat;
+	transposed_mat.rows = matrix1.cols;
+	transposed_mat.cols = matrix1.rows;
+	transposed_mat.type = matrix1.type;
+	transposed_mat.num_vals = matrix1.num_vals;
+	if(!(transposed_mat.ia = (int*)calloc(transposed_mat.cols + 1, sizeof(int)))){
+		fprintf(stderr, "Ran out of virtual memory while allocating transposed_mat matrix1\n");
+		exit(EXIT_FAILURE);
+	}
+	if(!(transposed_mat.ja = (int*)malloc(transposed_mat.num_vals*sizeof(int)))){
+		fprintf(stderr, "Ran out of virtual memory while allocating transposed_mat matrix1\n");
+		exit(EXIT_FAILURE);
+	}
+	if(transposed_mat.type == MAT_INT){
+		if(!(transposed_mat.nnz.i = (int*)malloc(transposed_mat.num_vals*sizeof(int)))){
+			fprintf(stderr, "Ran out of virtual memory while allocating transposed_mat matrix1\n");
+			exit(EXIT_FAILURE);
+		}
+	}
+	else{
+		if(!(transposed_mat.nnz.f = (long double*)malloc(transposed_mat.num_vals*sizeof(long double)))){
+			fprintf(stderr, "Ran out of virtual memory while allocating transposed_mat matrix1\n");
+			exit(EXIT_FAILURE);
+		}
+	}
+	//creating a new array to contain lengths so don't have to search for
+	//next nonzero element and make complexity n^2
+	int *row_lens;
+	if(!(row_lens = (int*)calloc(transposed_mat.rows, sizeof(int)))){
+		fprintf(stderr, "Ran out of virtual memory while allocating transposed_mat matrix1\n");
+		exit(EXIT_FAILURE);
+	}
+	//count num_vals per col
+	for(int i = 0; i < matrix1.num_vals; ++i)
+		transposed_mat.ia[matrix1.ja[i] + 1]++;
+	for(int i = 0; i < transposed_mat.cols + 1; ++i)
+		transposed_mat.ia[i+1] += transposed_mat.ia[i];
+	for(int i = 0; i < matrix1.cols; ++i){
+		for(int j = matrix1.ia[i]; j < matrix1.ia[i + 1]; ++j){
+			transposed_mat.ja[transposed_mat.ia[matrix1.ja[j]]+ row_lens[matrix1.ja[j]]] = i;
+			if(transposed_mat.type == MAT_INT)
+				transposed_mat.nnz.i[transposed_mat.ia[matrix1.ja[j]] + row_lens[matrix1.ja[j]]] = matrix1.nnz.i[j];
+			else
+				transposed_mat.nnz.f[transposed_mat.ia[matrix1.ja[j]] + row_lens[matrix1.ja[j]]] = matrix1.nnz.f[j];
+			row_lens[matrix1.ja[j]]++;
+		}
+	}
+	free(row_lens);
+	get_utc_time(&end);
+	rv = matrix_multiply_csr_csc_nothreading(transposed_mat, matrix2);
+	struct timespec delta = time_delta(end, start);
+	rv.t_process = time_sum(rv.t_process, delta);
+	free_csr(transposed_mat);
+	return rv;
+}
+
+mat_rv matrix_multiply_csc(csc matrix1, csc matrix2, int thread_count)
+{
+	mat_rv rv;
+	if(matrix1.cols != matrix2.rows){
+		rv.error = ERR_WRONG_DIM;
+		return rv;
+	}
+	if(matrix1.type != matrix2.type){
+		rv.error = ERR_TYPE_MISSMATCH;
+		return rv;
+	}
+	//transpose matrix1 then treat it as a csr
+	struct timespec start, end;
+	get_utc_time(&start);
+	csr transposed_mat;
+	transposed_mat.rows = matrix1.cols;
+	transposed_mat.cols = matrix1.rows;
+	transposed_mat.type = matrix1.type;
+	transposed_mat.num_vals = matrix1.num_vals;
+	if(!(transposed_mat.ia = (int*)calloc(transposed_mat.cols + 1, sizeof(int)))){
+		fprintf(stderr, "Ran out of virtual memory while allocating transposed_mat matrix1\n");
+		exit(EXIT_FAILURE);
+	}
+	if(!(transposed_mat.ja = (int*)malloc(transposed_mat.num_vals*sizeof(int)))){
+		fprintf(stderr, "Ran out of virtual memory while allocating transposed_mat matrix1\n");
+		exit(EXIT_FAILURE);
+	}
+	if(transposed_mat.type == MAT_INT){
+		if(!(transposed_mat.nnz.i = (int*)malloc(transposed_mat.num_vals*sizeof(int)))){
+			fprintf(stderr, "Ran out of virtual memory while allocating transposed_mat matrix1\n");
+			exit(EXIT_FAILURE);
+		}
+	}
+	else{
+		if(!(transposed_mat.nnz.f = (long double*)malloc(transposed_mat.num_vals*sizeof(long double)))){
+			fprintf(stderr, "Ran out of virtual memory while allocating transposed_mat matrix1\n");
+			exit(EXIT_FAILURE);
+		}
+	}
+	//creating a new array to contain lengths so don't have to search for
+	//next nonzero element and make complexity n^2
+	int *row_lens;
+	if(!(row_lens = (int*)calloc(transposed_mat.rows, sizeof(int)))){
+		fprintf(stderr, "Ran out of virtual memory while allocating transposed_mat matrix1\n");
+		exit(EXIT_FAILURE);
+	}
+	//count num_vals per col
+	for(int i = 0; i < matrix1.num_vals; ++i)
+		transposed_mat.ia[matrix1.ja[i] + 1]++;
+	for(int i = 0; i < transposed_mat.cols + 1; ++i)
+		transposed_mat.ia[i+1] += transposed_mat.ia[i];
+	for(int i = 0; i < matrix1.cols; ++i){
+		for(int j = matrix1.ia[i]; j < matrix1.ia[i + 1]; ++j){
+			transposed_mat.ja[transposed_mat.ia[matrix1.ja[j]]+ row_lens[matrix1.ja[j]]] = i;
+			if(transposed_mat.type == MAT_INT)
+				transposed_mat.nnz.i[transposed_mat.ia[matrix1.ja[j]] + row_lens[matrix1.ja[j]]] = matrix1.nnz.i[j];
+			else
+				transposed_mat.nnz.f[transposed_mat.ia[matrix1.ja[j]] + row_lens[matrix1.ja[j]]] = matrix1.nnz.f[j];
+			row_lens[matrix1.ja[j]]++;
+		}
+	}
+	free(row_lens);
+	get_utc_time(&end);
+	rv = matrix_multiply_csr_csc(transposed_mat, matrix2, thread_count);
+	struct timespec delta = time_delta(end, start);
+	rv.t_process = time_sum(rv.t_process, delta);
+	free_csr(transposed_mat);
+	return rv;
+}
+
 mat_rv matrix_multiply(OPERATIONARGS *args)
 {
 	mat_rv rv;
@@ -536,6 +822,40 @@ mat_rv matrix_multiply(OPERATIONARGS *args)
 		rv.t_construct = time_sum(rv.t_construct, delta);
 		free_coo(matrix1);
 		free_coo(matrix2);
+		return rv;
+		break;
+	}
+	case CSR:{
+		struct timespec start, end;
+		get_utc_time(&start);
+		csr matrix1 = read_csr(args->file1);
+		csr matrix2 = read_csr(args->file2);
+		get_utc_time(&end);
+		struct timespec delta = time_delta(end, start);
+		if(args->nothreading)
+			rv = matrix_multiply_csr_nothreading(matrix1, matrix2);
+		else
+			rv = matrix_multiply_csr(matrix1, matrix2, args->num_threads);
+		rv.t_construct = time_sum(rv.t_construct, delta);
+		free_csr(matrix1);
+		free_csr(matrix2);
+		return rv;
+		break;
+	}
+	case CSC:{
+		struct timespec start, end;
+		get_utc_time(&start);
+		csc matrix1 = read_csc(args->file1);
+		csc matrix2 = read_csc(args->file2);
+		get_utc_time(&end);
+		struct timespec delta = time_delta(end, start);
+		if(args->nothreading)
+			rv = matrix_multiply_csc_nothreading(matrix1, matrix2);
+		else
+			rv = matrix_multiply_csc(matrix1, matrix2, args->num_threads);
+		rv.t_construct = time_sum(rv.t_construct, delta);
+		free_csc(matrix1);
+		free_csc(matrix2);
 		return rv;
 		break;
 	}

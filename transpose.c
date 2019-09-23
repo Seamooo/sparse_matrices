@@ -94,7 +94,7 @@ mat_rv transpose_csr_nothreading(csr matrix)
 			exit(EXIT_FAILURE);
 		}
 	}
-	//creating a new array to contain lengths so don't ahve to search for
+	//creating a new array to contain lengths so don't have to search for
 	//next nonzero element and make complexity n^2
 	int *col_lens;
 	if(!(col_lens = (int*)calloc(result.cols, sizeof(int)))){
@@ -156,7 +156,7 @@ mat_rv transpose_csr(csr matrix, int thread_count)
 			exit(EXIT_FAILURE);
 		}
 	}
-	//creating a new array to contain lengths so don't ahve to search for
+	//creating a new array to contain lengths so don't have to search for
 	//next nonzero element and make complexity n^2
 	int *col_lens;
 	if(!(col_lens = (int*)calloc(result.cols, sizeof(int)))){
@@ -224,7 +224,7 @@ mat_rv transpose_csc_nothreading(csc matrix)
 			exit(EXIT_FAILURE);
 		}
 	}
-	//creating a new array to contain lengths so don't ahve to search for
+	//creating a new array to contain lengths so don't have to search for
 	//next nonzero element and make complexity n^2
 	int *row_lens;
 	if(!(row_lens = (int*)calloc(result.rows, sizeof(int)))){
@@ -238,8 +238,6 @@ mat_rv transpose_csc_nothreading(csc matrix)
 		result.ia[i+1] += result.ia[i];
 	for(int i = 0; i < matrix.cols; ++i){
 		for(int j = matrix.ia[i]; j < matrix.ia[i + 1]; ++j){
-			//take the ia from whatever rowumn it is currently + row_len as
-			//we're iterating from smallest col to largest col
 			result.ja[result.ia[matrix.ja[j]]+ row_lens[matrix.ja[j]]] = i;
 			if(result.type == MAT_INT)
 				result.nnz.i[result.ia[matrix.ja[j]] + row_lens[matrix.ja[j]]] = matrix.nnz.i[j];
@@ -286,7 +284,7 @@ mat_rv transpose_csc(csc matrix, int thread_count)
 			exit(EXIT_FAILURE);
 		}
 	}
-	//creating a new array to contain lengths so don't ahve to search for
+	//creating a new array to contain lengths so don't have to search for
 	//next nonzero element and make complexity n^2
 	int *row_lens;
 	if(!(row_lens = (int*)calloc(result.rows, sizeof(int)))){
@@ -300,8 +298,6 @@ mat_rv transpose_csc(csc matrix, int thread_count)
 		result.ia[i+1] += result.ia[i];
 	for(int i = 0; i < matrix.cols; ++i){
 		for(int j = matrix.ia[i]; j < matrix.ia[i + 1]; ++j){
-			//take the ia from whatever rowumn it is currently + row_len as
-			//we're iterating from smallest col to largest col
 			result.ja[result.ia[matrix.ja[j]]+ row_lens[matrix.ja[j]]] = i;
 			if(result.type == MAT_INT)
 				result.nnz.i[result.ia[matrix.ja[j]] + row_lens[matrix.ja[j]]] = matrix.nnz.i[j];
