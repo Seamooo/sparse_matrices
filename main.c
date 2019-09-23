@@ -7,6 +7,7 @@
 //if there's time change return values to sparse formats and pass time_spec structs
 //implement threading for construction and destruction
 //operation_args no longer required to be pointer
+//use schedule directive for trace
 
 //notes:
 //not freeing memory before exitting as OS should release allocated memory on exit

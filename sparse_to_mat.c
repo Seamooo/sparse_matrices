@@ -1,6 +1,6 @@
 #include "main.h"
 
-mat_rv coo_to_mat(coo matrix)
+mat_rv coo_to_mat_nothreading(coo matrix)
 {
 	mat_rv rv;
 	struct timespec start, end;
@@ -57,7 +57,7 @@ mat_rv coo_to_mat(coo matrix)
 	return rv;
 }
 
-mat_rv csr_to_mat(csr matrix)
+mat_rv csr_to_mat_nothreading(csr matrix)
 {
 	mat_rv rv;
 	struct timespec start, end;
@@ -109,7 +109,7 @@ mat_rv csr_to_mat(csr matrix)
 	return rv;
 }
 
-mat_rv csc_to_mat(csc matrix)
+mat_rv csc_to_mat_nothreading(csc matrix)
 {
 	mat_rv rv;
 	struct timespec start, end;

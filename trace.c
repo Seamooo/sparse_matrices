@@ -34,7 +34,7 @@ mat_rv trace_coo_nothreading(coo matrix)
 		}
 	}
 	get_utc_time(&end);
-	rv = coo_to_mat(result);
+	rv = coo_to_mat_nothreading(result);
 	rv.t_process = time_delta(end, start);
 	free_coo(result);
 	return rv;
@@ -93,7 +93,7 @@ mat_rv trace_coo(coo matrix, int thread_count)
 
 	get_utc_time(&end);
 	//add parallelism here later
-	rv = coo_to_mat(result);
+	rv = coo_to_mat_nothreading(result);
 	rv.t_process = time_delta(end, start);
 	free_coo(result);
 	return rv;
@@ -153,7 +153,7 @@ mat_rv trace_csr_nothreading(csr matrix)
 	}
 	//print_csr(matrix);
 	get_utc_time(&end);
-	rv = csr_to_mat(result);
+	rv = csr_to_mat_nothreading(result);
 	rv.t_process = time_delta(end, start);
 	free_csr(result);
 	return rv;
@@ -236,7 +236,7 @@ mat_rv trace_csr(csr matrix, int thread_count)
 
 	//print_csr(matrix);
 	get_utc_time(&end);
-	rv = csr_to_mat(result);
+	rv = csr_to_mat_nothreading(result);
 	rv.t_process = time_delta(end, start);
 	free_csr(result);
 	return rv;

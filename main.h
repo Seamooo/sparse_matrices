@@ -187,9 +187,9 @@ extern csr read_csr(FILE*);
 extern csc read_csc(FILE*);
 
 //conversion functions
-extern mat_rv coo_to_mat(coo);
-extern mat_rv csr_to_mat(csr);
-extern mat_rv csc_to_mat(csc);
+extern mat_rv coo_to_mat_nothreading(coo);
+extern mat_rv csr_to_mat_nothreading(csr);
+extern mat_rv csc_to_mat_nothreading(csc);
 
 //sort functions
 extern void sort_coo(coo, ORDER);

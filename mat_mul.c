@@ -84,8 +84,7 @@ mat_rv matrix_multiply_csr_csc_nothreading(csr matrix1, csr matrix2)
 	}
 	result.num_vals = result.ia[result.rows];
 	get_utc_time(&end);
-	print_csr(result);
-	rv = csr_to_mat(result);
+	rv = csr_to_mat_nothreading(result);
 	rv.t_process = time_delta(end, start);
 	free_csr(result);
 	return rv;
@@ -148,7 +147,7 @@ mat_rv matrix_multiply_csr_csc(csr matrix1, csr matrix2, int thread_count)
 			exit(EXIT_FAILURE);
 		}
 	}
-	//using result.ia to store length of each row then iterate through at end
+	//using result.ia to store length of each row then iterate through at the end
 	if(!(result.ia = (int*)calloc(result.rows + 1, sizeof(int)))){
 		fprintf(stderr, "Ran out of virtual memory while allocating result matrix\n");
 		exit(EXIT_FAILURE);
@@ -244,7 +243,7 @@ mat_rv matrix_multiply_csr_csc(csr matrix1, csr matrix2, int thread_count)
 	else
 		free(local_nnzs.f);
 	get_utc_time(&end);
-	rv = csr_to_mat(result);
+	rv = csr_to_mat_nothreading(result);
 	rv.t_process = time_delta(end, start);
 	free_csr(result);
 	return rv;
@@ -345,7 +344,7 @@ mat_rv matrix_multiply_coo_nothreading(coo matrix1, coo matrix2)
 		}
 	}
 	get_utc_time(&end);
-	rv = coo_to_mat(result);
+	rv = coo_to_mat_nothreading(result);
 	rv.t_process = time_delta(end, start);
 	free_coo(result);
 	return rv;
@@ -494,7 +493,7 @@ mat_rv matrix_multiply_coo(coo matrix1, coo matrix2, int thread_count)
 	free(local_elems);
 	free(local_elems_len);
 	get_utc_time(&end);
-	rv = coo_to_mat(result);
+	rv = coo_to_mat_nothreading(result);
 	rv.t_process = time_delta(end, start);
 	free_coo(result);
 	return rv;
