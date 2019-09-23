@@ -5,7 +5,7 @@ GCC_CMD = gcc-7 #change this to command supporting openmp
 ERROR_HANDLER = \
 	case "$$?" in \
 		1) \
-			echo $(GCC_CMD) does not support openmp, please install a version of gcc or clang that contains fopenmp and change GCC_CMD in Makefile;; \
+			echo $(GCC_CMD) does not support openmp, please install a version of gcc or clang that supports fopenmp and change GCC_CMD in Makefile;; \
 	esac;
 
 sparse_matrix.bin:$(CFILES) $(HFILES)

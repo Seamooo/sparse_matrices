@@ -87,6 +87,12 @@ int main(int argc, char *argv[])
 						fprintf(stderr, "Number of threads specified out of range\n");
 						exit(EXIT_FAILURE);
 					}
+					fprintf(stderr, "Number of threads must be larger than 0\n");
+					exit(EXIT_FAILURE);
+				}
+				else if(operation_args.num_threads < 0){
+					fprintf(stderr, "Number of threads must be larger than 0\n");
+					exit(EXIT_FAILURE);
 				}
 			}
 			else if(strncmp("-l",argv[i], 2*sizeof(char)) == 0)
