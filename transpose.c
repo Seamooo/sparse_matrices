@@ -11,11 +11,7 @@ mat_rv transpose_csr_csc_nothreading(csr matrix){
 
 mat_rv transpose_csr_csc(csr matrix, int thread_count){
 	mat_rv rv;
-	//later add threaded destruction function to use thread_count
-	//filler function for no compiler warning in the meantime
-	if(thread_count == -1)
-		p();
-	rv = csc_to_mat_nothreading(matrix);
+	rv = csc_to_mat(matrix, thread_count);
 	//process time is 0 as treating csr as csc results in an already transposed matrix
 	rv.t_process.tv_sec = 0;
 	rv.t_process.tv_nsec = 0;
@@ -59,7 +55,7 @@ mat_rv transpose_coo(coo matrix, int thread_count)
 	matrix.cols = matrix.rows;
 	matrix.rows = temp_cols;
 	//matrix isn't in ordered form but isn't important for conversion
-	rv = coo_to_mat_nothreading(matrix);
+	rv = coo_to_mat(matrix, thread_count);
 	rv.t_process = time_delta(end, start);
 	return rv;
 }
@@ -184,11 +180,7 @@ mat_rv transpose_csr(csr matrix, int thread_count)
 	}
 	free(col_lens);
 	get_utc_time(&end);
-	//later add threaded destruction function to use thread_count
-	//filler function for no compiler warning in the meantime
-	if(thread_count == -1)
-		p();
-	rv = csr_to_mat_nothreading(result);
+	rv = csr_to_mat(result, thread_count);
 	rv.t_process = time_delta(end, start);
 	free_csr(result);
 	return rv;
@@ -308,11 +300,7 @@ mat_rv transpose_csc(csc matrix, int thread_count)
 	}
 	free(row_lens);
 	get_utc_time(&end);
-	//later add threaded destruction function to use thread_count
-	//filler function for no compiler warning in the meantime
-	if(thread_count == -1)
-		p();
-	rv = csc_to_mat_nothreading(result);
+	rv = csc_to_mat(result, thread_count);
 	rv.t_process = time_delta(end, start);
 	free_csc(result);
 	return rv;

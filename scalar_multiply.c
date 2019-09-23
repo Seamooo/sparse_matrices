@@ -65,7 +65,7 @@ mat_rv scalar_multiply_coo(coo matrix, SCALAR *scalar, int thread_count)
 	//change matrix type if necessary
 	if((matrix.type == MAT_INT && scalar->type == MAT_LDOUBLE))
 		matrix.type = MAT_LDOUBLE;
-	rv = coo_to_mat_nothreading(matrix);
+	rv = coo_to_mat(matrix, thread_count);
 	rv.t_process = time_delta(end, start);
 	return rv;
 }
@@ -189,7 +189,7 @@ mat_rv scalar_multiply_csr(csr matrix, SCALAR *scalar, int thread_count)
 			result.ia[i] = matrix.ia[i];
 	}
 	get_utc_time(&end);
-	rv = csr_to_mat_nothreading(result);
+	rv = csr_to_mat(result, thread_count);
 	free_csr(result);
 	rv.t_process = time_delta(end, start);
 	return rv;
@@ -312,7 +312,7 @@ mat_rv scalar_multiply_csc(csc matrix, SCALAR *scalar, int thread_count)
 			result.ia[i] = matrix.ia[i];
 	}
 	get_utc_time(&end);
-	rv = csc_to_mat_nothreading(result);
+	rv = csc_to_mat(result, thread_count);
 	free_csc(result);
 	rv.t_process = time_delta(end, start);
 	return rv;

@@ -243,7 +243,7 @@ mat_rv matrix_multiply_csr_csc(csr matrix1, csr matrix2, int thread_count)
 	else
 		free(local_nnzs.f);
 	get_utc_time(&end);
-	rv = csr_to_mat_nothreading(result);
+	rv = csr_to_mat(result, thread_count);
 	rv.t_process = time_delta(end, start);
 	free_csr(result);
 	return rv;
@@ -493,7 +493,7 @@ mat_rv matrix_multiply_coo(coo matrix1, coo matrix2, int thread_count)
 	free(local_elems);
 	free(local_elems_len);
 	get_utc_time(&end);
-	rv = coo_to_mat_nothreading(result);
+	rv = coo_to_mat(result, thread_count);
 	rv.t_process = time_delta(end, start);
 	free_coo(result);
 	return rv;

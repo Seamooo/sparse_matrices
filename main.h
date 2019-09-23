@@ -188,8 +188,11 @@ extern csc read_csc(FILE*);
 
 //conversion functions
 extern mat_rv coo_to_mat_nothreading(coo);
+extern mat_rv coo_to_mat(coo, int);
 extern mat_rv csr_to_mat_nothreading(csr);
+extern mat_rv csr_to_mat(csr, int);
 extern mat_rv csc_to_mat_nothreading(csc);
+extern mat_rv csc_to_mat(csc, int);
 
 //sort functions
 extern void sort_coo(coo, ORDER);
