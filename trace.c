@@ -258,48 +258,39 @@ mat_rv trace(OPERATIONARGS *args)
 		args->format = COO;
 	switch(args->format){
 	case COO:{
-		struct timespec start, end;
-		get_utc_time(&start);
-		coo matrix = read_coo(args->file1);
-		get_utc_time(&end);
-		struct timespec delta = time_delta(end, start);
+		struct timespec construct;
+		coo matrix = read_coo(args->file1, &construct);
 		if(args->nothreading)
 			rv = trace_coo_nothreading(matrix);
 		else
 			rv = trace_coo(matrix, args->num_threads);
-		rv.t_construct = time_sum(rv.t_construct, delta);
+		rv.t_construct = time_sum(rv.t_construct, construct);
 		free_coo(matrix);
 		rv.isval = true;
 		return rv;
 		break;
 	}
 	case CSR:{
-		struct timespec start, end;
-		get_utc_time(&start);
-		csr matrix = read_csr(args->file1);
-		get_utc_time(&end);
-		struct timespec delta = time_delta(end, start);
+		struct timespec construct;
+		csr matrix = read_csr(args->file1, &construct);
 		if(args->nothreading)
 			rv = trace_csr_nothreading(matrix);
 		else
 			rv = trace_csr(matrix, args->num_threads);
-		rv.t_construct = time_sum(rv.t_construct, delta);
+		rv.t_construct = time_sum(rv.t_construct, construct);
 		free_csr(matrix);
 		rv.isval = true;
 		return rv;
 		break;
 	}
 	case CSC:{
-		struct timespec start, end;
-		get_utc_time(&start);
-		csc matrix = read_csc(args->file1);
-		get_utc_time(&end);
-		struct timespec delta = time_delta(end, start);
+		struct timespec construct;
+		csc matrix = read_csc(args->file1, &construct);
 		if(args->nothreading)
 			rv = trace_csc_nothreading(matrix);
 		else
 			rv = trace_csc(matrix, args->num_threads);
-		rv.t_construct = time_sum(rv.t_construct, delta);
+		rv.t_construct = time_sum(rv.t_construct, construct);
 		free_csc(matrix);
 		rv.isval = true;
 		return rv;

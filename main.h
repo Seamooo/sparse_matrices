@@ -182,9 +182,9 @@ extern void free_csr(csr);
 extern void free_csc(csc);
 
 //read mat functions
-extern coo read_coo(FILE*);
-extern csr read_csr(FILE*);
-extern csc read_csc(FILE*);
+extern coo read_coo(FILE*, struct timespec*);
+extern csr read_csr(FILE*, struct timespec*);
+extern csc read_csc(FILE*, struct timespec*);
 
 //conversion functions
 extern mat_rv coo_to_mat_nothreading(coo);

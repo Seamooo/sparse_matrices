@@ -29,7 +29,7 @@ MAT_TYPE get_type(FILE *file){
 	return type;
 }
 
-int read_int_token(char *line, int *start)
+int read_int_token(char *line, int *line_index)
 {
 	int size = MALLOCINIT;
 	char *rv_str;
@@ -37,13 +37,13 @@ int read_int_token(char *line, int *start)
 		fprintf(stderr, "Ran out of virtual memory when reading integer from string\n");
 		exit(EXIT_FAILURE);
 	}
-	while(line[*start] == ' ')
-		++(*start);
+	while(line[*line_index] == ' ')
+		++(*line_index);
 	int length = 1;
-	while(line[*start] != ' ' && line[*start] != '\0'){
-		if(!isdigit(line[*start])){
+	while(line[*line_index] != ' ' && line[*line_index] != '\0'){
+		if(!isdigit(line[*line_index])){
 			fprintf(stderr, "cannot read token as integer\n");
-			fprintf(stderr, "unexpected character: %c\n", line[*start]);
+			fprintf(stderr, "unexpected character: %c\n", line[*line_index]);
 			exit(EXIT_FAILURE);
 		}
 		if(length == size){
@@ -53,9 +53,9 @@ int read_int_token(char *line, int *start)
 				exit(EXIT_FAILURE);
 			}
 		}
-		rv_str[length - 1] = line[*start];
+		rv_str[length - 1] = line[*line_index];
 		length++;
-		(*start)++;
+		(*line_index)++;
 	}
 	rv_str[length - 1] = '\0';
 	int rv = strtoimax(rv_str,NULL,10);
@@ -73,7 +73,7 @@ int read_int_token(char *line, int *start)
 	return rv;
 }
 
-long double read_float_token(char *line, int *start)
+long double read_float_token(char *line, int *line_index)
 {
 	int size = MALLOCINIT;
 	char *rv_str;
@@ -81,15 +81,15 @@ long double read_float_token(char *line, int *start)
 		fprintf(stderr, "Ran out of virtual memory when reading integer from string\n");
 		exit(EXIT_FAILURE);
 	}
-	while(line[*start] == ' ')
-		++(*start);
+	while(line[*line_index] == ' ')
+		++(*line_index);
 	int length = 1;
 	bool found_decimal = false;
-	while(line[*start] != ' ' && line[*start] != '\0'){
-		if(!isdigit(line[*start])){
-			if(line[*start] != '.' || found_decimal){
+	while(line[*line_index] != ' ' && line[*line_index] != '\0'){
+		if(!isdigit(line[*line_index])){
+			if(line[*line_index] != '.' || found_decimal){
 				fprintf(stderr, "cannot read token as floating point\n");
-				fprintf(stderr, "unexpected character: %c\n", line[*start]);
+				fprintf(stderr, "unexpected character: %c\n", line[*line_index]);
 				exit(EXIT_FAILURE);
 			}
 			found_decimal = true;
@@ -101,9 +101,9 @@ long double read_float_token(char *line, int *start)
 				exit(EXIT_FAILURE);
 			}
 		}
-		rv_str[length - 1] = line[*start];
+		rv_str[length - 1] = line[*line_index];
 		length++;
-		(*start)++;
+		(*line_index)++;
 	}
 	rv_str[length - 1] = '\0';
 	long double rv = strtold(rv_str,NULL);
@@ -126,29 +126,31 @@ long double read_float_token(char *line, int *start)
 int read_dim(FILE *file)
 {
 	char *line = readline(file);
-	int start = 0;
-	int rv = read_int_token(line, &start);
+	int line_index = 0;
+	int rv = read_int_token(line, &line_index);
 	free(line);
 	return rv;
 }
 
 //made the decision to not write a function to convert to a 2d representation of the values
 //as this way is more efficient. For some structures this couldn't be avoided
-coo read_coo(FILE* file)
+coo read_coo(FILE* file, struct timespec *timer)
 {
 	coo rv;
 	rv.type = get_type(file);
 	rv.rows = read_dim(file);
 	rv.cols = read_dim(file);
+	char *line = readline(file);
+	fclose(file);
+	struct timespec start, end;
+	get_utc_time(&start);
 	int size = MALLOCINIT;
 	if(!(rv.elems = malloc(size*sizeof(coo_elem)))){
 		fprintf(stderr, "Ran out of virtual memory when allocating coo struct\n");
 		exit(EXIT_FAILURE);
 	}
 	rv.length = 0;
-	char *line = readline(file);
-	fclose(file);
-	int start = 0;
+	int line_index = 0;
 	for(int i = 0; i < rv.rows; ++i){
 		for(int j = 0; j < rv.cols; ++j){
 			union{
@@ -156,12 +158,12 @@ coo read_coo(FILE* file)
 				long double f;
 			} val;
 			if(rv.type == MAT_INT){
-				val.i = read_int_token(line, &start);
+				val.i = read_int_token(line, &line_index);
 				if(val.i == 0)
 					continue;
 			}
 			else{
-				val.f = read_float_token(line, &start);
+				val.f = read_float_token(line, &line_index);
 				if(val.f == 0.0)
 					continue;
 			}
@@ -182,16 +184,22 @@ coo read_coo(FILE* file)
 			rv.length++;
 		}
 	}
+	get_utc_time(&end);
 	free(line);
+	*timer = time_delta(end, start);
 	return rv;
 }
 
-csr read_csr(FILE *file)
+csr read_csr(FILE *file, struct timespec *timer)
 {
 	csr rv;
 	rv.type = get_type(file);
 	rv.rows = read_dim(file);
 	rv.cols = read_dim(file);
+	char *line = readline(file);
+	fclose(file);
+	struct timespec start, end;
+	get_utc_time(&start);
 	rv.num_vals = 0;
 	int nnz_size = MALLOCINIT;
 	if(rv.type == MAT_INT){
@@ -214,9 +222,7 @@ csr read_csr(FILE *file)
 		fprintf(stderr, "Ran out of virtual memory when allocating csr struct\n");
 		exit(EXIT_FAILURE);
 	}
-	char *line = readline(file);
-	fclose(file);
-	int start = 0;
+	int line_index = 0;
 	rv.ia[0] = 0;
 	for(int i = 0; i < rv.rows; ++i){
 		int nnz_count = 0;
@@ -226,12 +232,12 @@ csr read_csr(FILE *file)
 				long double f;
 			} val;
 			if(rv.type == MAT_INT){
-				val.i = read_int_token(line, &start);
+				val.i = read_int_token(line, &line_index);
 				if(val.i == 0)
 					continue;
 			}
 			else{
-				val.f = read_float_token(line, &start);
+				val.f = read_float_token(line, &line_index);
 				if(val.f == 0.0)
 					continue;
 			}
@@ -263,16 +269,22 @@ csr read_csr(FILE *file)
 		}
 		rv.ia[i + 1] = rv.ia[i] + nnz_count;
 	}
+	get_utc_time(&end);
 	free(line);
+	*timer = time_delta(end, start);
 	return rv;
 }
 
-csc read_csc(FILE *file)
+csc read_csc(FILE *file, struct timespec *timer)
 {
 	csc rv;
 	rv.type = get_type(file);
 	rv.rows = read_dim(file);
 	rv.cols = read_dim(file);
+	char *line = readline(file);
+	fclose(file);
+	struct timespec start, end;
+	get_utc_time(&start);
 	rv.num_vals = 0;
 	int nnz_size = MALLOCINIT;
 	if(rv.type == MAT_INT){
@@ -311,9 +323,7 @@ csc read_csc(FILE *file)
 			exit(EXIT_FAILURE);
 		}
 	}
-	char *line = readline(file);
-	fclose(file);
-	int start = 0;
+	int line_index = 0;
 	for(int i = 0; i < rv.rows; ++i){
 		if(rv.type == MAT_INT){
 			if(!(temp_mat_vals.i[i] = (int*)malloc(rv.cols*sizeof(int)))){
@@ -329,9 +339,9 @@ csc read_csc(FILE *file)
 		}
 		for(int j = 0; j < rv.cols; ++j){
 			if(rv.type == MAT_INT)
-				temp_mat_vals.i[i][j] = read_int_token(line, &start);
+				temp_mat_vals.i[i][j] = read_int_token(line, &line_index);
 			else
-				temp_mat_vals.f[i][j] = read_float_token(line, &start);
+				temp_mat_vals.f[i][j] = read_float_token(line, &line_index);
 		}
 	}
 	rv.ia[0] = 0;
@@ -384,6 +394,8 @@ csc read_csc(FILE *file)
 		free(temp_mat_vals.i);
 	else
 		free(temp_mat_vals.f);
+	get_utc_time(&end);
 	free(line);
+	*timer = time_delta(end, start);
 	return rv;
 }

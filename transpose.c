@@ -2,6 +2,9 @@
 
 mat_rv transpose_csr_csc_nothreading(csr matrix){
 	mat_rv rv;
+	int buf = matrix.cols;
+	matrix.cols = matrix.rows;
+	matrix.rows = buf;
 	rv = csc_to_mat_nothreading(matrix);
 	//process time is 0 as treating csr as csc results in an already transposed matrix
 	rv.t_process.tv_sec = 0;
@@ -11,6 +14,9 @@ mat_rv transpose_csr_csc_nothreading(csr matrix){
 
 mat_rv transpose_csr_csc(csr matrix, int thread_count){
 	mat_rv rv;
+	int buf = matrix.cols;
+	matrix.cols = matrix.rows;
+	matrix.rows = buf;
 	rv = csc_to_mat(matrix, thread_count);
 	//process time is 0 as treating csr as csc results in an already transposed matrix
 	rv.t_process.tv_sec = 0;
@@ -312,61 +318,49 @@ mat_rv transpose(OPERATIONARGS *args)
 	//default CSR -> CSC
 	switch(args->format){
 	case FORM_DEFAULT:{
-		struct timespec start, end;
-		get_utc_time(&start);
-		csr matrix = read_csr(args->file1);
-		get_utc_time(&end);
-		struct timespec delta = time_delta(end, start);
+		struct timespec construct;
+		csr matrix = read_csr(args->file1, &construct);
 		if(args->nothreading)
 			rv = transpose_csr_csc_nothreading(matrix);
 		else
 			rv = transpose_csr_csc(matrix, args->num_threads);
-		rv.t_construct = time_sum(rv.t_construct, delta);
+		rv.t_construct = time_sum(rv.t_construct, construct);
 		free_csr(matrix);
 		return rv;
 		break;
 	}
 	case COO:{
-		struct timespec start, end;
-		get_utc_time(&start);
-		coo matrix = read_coo(args->file1);
-		get_utc_time(&end);
-		struct timespec delta = time_delta(end, start);
+		struct timespec construct;
+		coo matrix = read_coo(args->file1, &construct);
 		if(args->nothreading)
 			rv = transpose_coo_nothreading(matrix);
 		else
 			rv = transpose_coo(matrix, args->num_threads);
-		rv.t_construct = time_sum(rv.t_construct, delta);
+		rv.t_construct = time_sum(rv.t_construct, construct);
 		free_coo(matrix);
 		return rv;
 		break;
 	}
 	case CSR:{
-		struct timespec start, end;
-		get_utc_time(&start);
-		csr matrix = read_csr(args->file1);
-		get_utc_time(&end);
-		struct timespec delta = time_delta(end, start);
+		struct timespec construct;
+		csr matrix = read_csr(args->file1, &construct);
 		if(args->nothreading)
 			rv = transpose_csr_nothreading(matrix);
 		else
 			rv = transpose_csr(matrix, args->num_threads);
-		rv.t_construct = time_sum(rv.t_construct, delta);
+		rv.t_construct = time_sum(rv.t_construct, construct);
 		free_csr(matrix);
 		return rv;
 		break;
 	}
 	case CSC:{
-		struct timespec start, end;
-		get_utc_time(&start);
-		csc matrix = read_csc(args->file1);
-		get_utc_time(&end);
-		struct timespec delta = time_delta(end, start);
+		struct timespec construct;
+		csc matrix = read_csc(args->file1, &construct);
 		if(args->nothreading)
 			rv = transpose_csc_nothreading(matrix);
 		else
 			rv = transpose_csc(matrix, args->num_threads);
-		rv.t_construct = time_sum(rv.t_construct, delta);
+		rv.t_construct = time_sum(rv.t_construct, construct);
 		free_csc(matrix);
 		return rv;
 		break;

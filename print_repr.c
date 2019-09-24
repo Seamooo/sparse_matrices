@@ -145,9 +145,9 @@ void print_csc(csc matrix)
 	}
 	printf("]\n");
 	printf("ia: [");
-	for(int i = 0; i < matrix.rows + 1; ++i){
+	for(int i = 0; i < matrix.cols + 1; ++i){
 		printf("%d", matrix.ia[i]);
-		if(i < matrix.rows)
+		if(i < matrix.cols)
 			printf(", ");
 	}
 	printf("]\n");
