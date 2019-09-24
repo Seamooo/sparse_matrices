@@ -2,7 +2,6 @@
 red=$'\e[0;91m'
 green=$'\e[1;32m'
 end=$'\e[0m'
-
 SINGLE_FILE_OPERATION=(
 	"--sm 3.5"
 	"--sm 3"
@@ -28,7 +27,6 @@ SINGLE_FILES=(
 	"-f int64.in"
 	"-f float64.in"
 	"-f int64x32.in"
-	"-f int512x1024.in"
 );
 SF_LEN=${#SINGLE_FILES[@]}
 TR_FILES=(
@@ -48,7 +46,6 @@ AD_FILES=(
 	"-f int32x64.in int32x64.in"
 );
 ADF_LEN=${#AD_FILES[@]};
-
 NUM_SFO_TESTS=$(($SFO_LEN*$SF_LEN*$FORMAT_LEN*$THREADING_LEN))
 for ((i=0; i<NUM_SFO_TESTS; ++i));
 do
@@ -60,7 +57,6 @@ do
 	SF_i=$(($TEMP % $SF_LEN));
 	TEMP=$(($TEMP / $SF_LEN));
 	SFO_i=$(($TEMP % $SFO_LEN));
-
 	TEST="./sparse_matrix.bin ${SINGLE_FILE_OPERATION[SFO_i]} ${SINGLE_FILES[SF_i]} ${FORMAT[FORMAT_i]} ${THREADING[THREADING_i]} -s"
 	$TEST;
 	case "$?" in
@@ -79,7 +75,6 @@ do
 	FORMAT_i=$(($TEMP % $FORMAT_LEN));
 	TEMP=$(($TEMP / $FORMAT_LEN));
 	TRF_i=$((TEMP % TRF_LEN));
-
 	TEST="./sparse_matrix.bin --tr ${TR_FILES[TRF_i]} ${FORMAT[FORMAT_i]} ${THREADING[THREADING_i]} -s"
 	$TEST;
 	case "$?" in
@@ -89,7 +84,6 @@ do
 			echo "$TEST ${red}Error${end}";;
 	esac;
 done;
-
 NUM_AD_TESTS=$(($ADF_LEN*$FORMAT_LEN*$THREADING_LEN))
 for ((i = 0; i<NUM_AD_TESTS; ++i));
 do
@@ -99,7 +93,6 @@ do
 	FORMAT_i=$(($TEMP % $FORMAT_LEN));
 	TEMP=$(($TEMP / $FORMAT_LEN));
 	ADF_i=$((TEMP % ADF_LEN));
-
 	TEST="./sparse_matrix.bin --ad ${AD_FILES[ADF_i]} ${FORMAT[FORMAT_i]} ${THREADING[THREADING_i]} -s"
 	$TEST;
 	case "$?" in
@@ -109,7 +102,6 @@ do
 			echo "$TEST ${red}Error${end}";;
 	esac;
 done;
-
 NUM_MM_TESTS=$(($MMF_LEN*$FORMAT_LEN*$THREADING_LEN))
 for ((i = 0; i<NUM_AD_TESTS; ++i));
 do
@@ -119,7 +111,6 @@ do
 	FORMAT_i=$(($TEMP % $FORMAT_LEN));
 	TEMP=$(($TEMP / $FORMAT_LEN));
 	MMF_i=$((TEMP % MMF_LEN));
-
 	TEST="./sparse_matrix.bin --mm ${MM_FILES[MMF_i]} ${FORMAT[FORMAT_i]} ${THREADING[THREADING_i]} -s"
 	$TEST;
 	case "$?" in

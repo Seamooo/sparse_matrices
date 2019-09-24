@@ -18,6 +18,8 @@ with open(sys.argv[1], 'r') as fp:
 				newline.append('\\"')
 			elif c == '$':
 				newline.append('\\$$')
+			elif c == '%':
+				newline.append('%%')
 			else:
 				newline.append(c)
 		newline = ''.join(newline)

@@ -18,84 +18,139 @@ install:
 	@make unittests.sh
 	@make float64.in
 	@make int64.in
+	@make int64x32.in
+	@make int32x64.in
 	@make sparse_matrix.bin
 	echo "run unittests.sh to check install was successful"
 
 #remember to update when finalised
 unittests.sh:
 	@printf "#colours\n" > unittests.sh
-	@printf "red=\$$'\e[0;31m'\n" >> unittests.sh
-	@printf "green=\$$'\e[1;32m'\n" >> unittests.sh
-	@printf "end=\$$'\e[0m'\n" >> unittests.sh
-	@printf "TESTS=(\n" >> unittests.sh
-	@printf "#scalar multiplication tests\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --sm 3.5 -f int64.in --format COO -s -t 4\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --sm 3.5 -f int64.in --format COO -s --nothreading\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --sm 3.5 -f float64.in --format COO -s -t 4\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --sm 3.5 -f float64.in --format COO -s --nothreading\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --sm 3 -f int64.in --format COO -s -t 4\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --sm 3 -f int64.in --format COO -s --nothreading\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --sm 3 -f float64.in --format COO -s -t 4\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --sm 3 -f float64.in --format COO -s --nothreading\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --sm -3.5 -f int64.in --format COO -s -t 4\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --sm -3.5 -f int64.in --format COO -s --nothreading\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --sm -3.5 -f float64.in --format COO -s -t 4\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --sm -3.5 -f float64.in --format COO -s --nothreading\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --sm -3 -f int64.in --format COO -s -t 4\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --sm -3 -f int64.in --format COO -s --nothreading\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --sm -3 -f float64.in --format COO -s -t 4\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --sm -3 -f float64.in --format COO -s --nothreading\"\n" >> unittests.sh
-	@printf "#trace tests\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --tr -f int64.in --format COO -s -t 4\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --tr -f int64.in --format COO -s --nothreading\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --tr -f float64.in --format COO -s -t 4\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --tr -f float64.in --format COO -s --nothreading\"\n" >> unittests.sh
-	@printf "#transpose tests\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --ts -f int64.in --format COO -s -t 4\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --ts -f int64.in --format COO -s --nothreading\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --ts -f float64.in --format COO -s -t 4\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --ts -f float64.in --format COO -s --nothreading\"\n" >> unittests.sh
-	@printf "#matrix addition tests\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --ad -f int64.in int64.in --format COO -s -t 4\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --ad -f int64.in int64.in --format COO -s --nothreading\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --ad -f float64.in float64.in --format COO -s -t 4\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --ad -f float64.in float64.in --format COO -s --nothreadin" >> unittests.sh
-	@printf "g\"\n" >> unittests.sh
-	@printf "#matrix multiplication tests\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --mm -f int64.in int64.in --format COO -s -t 4\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --mm -f int64.in int64.in --format COO -s --nothreading\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --mm -f float64.in float64.in --format COO -s -t 4\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --mm -f float64.in float64.in --format COO -s --nothreadin" >> unittests.sh
-	@printf "g\"\n" >> unittests.sh
-	@printf "#basic tests -s flag only included not to spam the screen\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --sm 3.5 -f int64.in -s\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --sm 3 -f int64.in -s\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --sm 3.5 -f float64.in -s\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --sm 3 -f float64.in -s\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --sm -3.5 -f int64.in -s\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --sm -3 -f int64.in -s\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --sm -3.5 -f float64.in -s\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --sm -3 -f float64.in -s\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --tr -f int64.in -s\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --tr -f float64.in -s\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --ts -f int64.in  -s\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --ts -f float64.in -s\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --ad -f int64.in int64.in -s\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --ad -f float64.in float64.in -s\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --mm -f int64.in int64.in -s\"\n" >> unittests.sh
-	@printf "\"./sparse_matrix.bin --mm -f float64.in float64.in -s\"\n" >> unittests.sh
-	@printf ")\n" >> unittests.sh
-	@printf "for ((i=0; i<\$${#TESTS[@]}; ++i));\n" >> unittests.sh
+	@printf "red=\$$'\\\e[0;91m'\n" >> unittests.sh
+	@printf "green=\$$'\\\e[1;32m'\n" >> unittests.sh
+	@printf "end=\$$'\\\e[0m'\n" >> unittests.sh
+	@printf "SINGLE_FILE_OPERATION=(\n" >> unittests.sh
+	@printf "	\"--sm 3.5\"\n" >> unittests.sh
+	@printf "	\"--sm 3\"\n" >> unittests.sh
+	@printf "	\"--sm -3.5\"\n" >> unittests.sh
+	@printf "	\"--sm -3\"\n" >> unittests.sh
+	@printf "	\"--ts\"\n" >> unittests.sh
+	@printf ");\n" >> unittests.sh
+	@printf "SFO_LEN=\$${#SINGLE_FILE_OPERATION[@]};\n" >> unittests.sh
+	@printf "FORMAT=(\n" >> unittests.sh
+	@printf "	\"\"\n" >> unittests.sh
+	@printf "	\"--format COO\"\n" >> unittests.sh
+	@printf "	\"--format CSR\"\n" >> unittests.sh
+	@printf "	\"--format CSC\"\n" >> unittests.sh
+	@printf ");\n" >> unittests.sh
+	@printf "FORMAT_LEN=\$${#FORMAT[@]};\n" >> unittests.sh
+	@printf "THREADING=(\n" >> unittests.sh
+	@printf "	\"\"\n" >> unittests.sh
+	@printf "	\"-t 5\"\n" >> unittests.sh
+	@printf "	\"--nothreading\"\n" >> unittests.sh
+	@printf ");\n" >> unittests.sh
+	@printf "THREADING_LEN=\$${#THREADING[@]};\n" >> unittests.sh
+	@printf "SINGLE_FILES=(\n" >> unittests.sh
+	@printf "	\"-f int64.in\"\n" >> unittests.sh
+	@printf "	\"-f float64.in\"\n" >> unittests.sh
+	@printf "	\"-f int64x32.in\"\n" >> unittests.sh
+	@printf ");\n" >> unittests.sh
+	@printf "SF_LEN=\$${#SINGLE_FILES[@]}\n" >> unittests.sh
+	@printf "TR_FILES=(\n" >> unittests.sh
+	@printf "	\"-f int64.in\"\n" >> unittests.sh
+	@printf "	\"-f float64.in\"\n" >> unittests.sh
+	@printf ");\n" >> unittests.sh
+	@printf "TRF_LEN=\$${#TR_FILES[@]}\n" >> unittests.sh
+	@printf "MM_FILES=(\n" >> unittests.sh
+	@printf "	\"-f int32x64.in int64x32.in\"\n" >> unittests.sh
+	@printf "	\"-f int64.in int64.in\"\n" >> unittests.sh
+	@printf "	\"-f float64.in float64.in\"\n" >> unittests.sh
+	@printf ");\n" >> unittests.sh
+	@printf "MMF_LEN=\$${#MM_FILES[@]};\n" >> unittests.sh
+	@printf "AD_FILES=(\n" >> unittests.sh
+	@printf "	\"-f int64.in int64.in\"\n" >> unittests.sh
+	@printf "	\"-f float64.in float64.in\"\n" >> unittests.sh
+	@printf "	\"-f int32x64.in int32x64.in\"\n" >> unittests.sh
+	@printf ");\n" >> unittests.sh
+	@printf "ADF_LEN=\$${#AD_FILES[@]};\n" >> unittests.sh
+	@printf "NUM_SFO_TESTS=\$$((\$$SFO_LEN*\$$SF_LEN*\$$FORMAT_LEN*\$$THREADING_LEN))\n" >> unittests.sh
+	@printf "for ((i=0; i<NUM_SFO_TESTS; ++i));\n" >> unittests.sh
 	@printf "do\n" >> unittests.sh
-	@printf "	\$${TESTS[i]};\n" >> unittests.sh
+	@printf "	TEMP=\$$((\$$i));\n" >> unittests.sh
+	@printf "	THREADING_i=\$$((\$$TEMP %% \$$THREADING_LEN));\n" >> unittests.sh
+	@printf "	TEMP=\$$((\$$TEMP / \$$THREADING_LEN));\n" >> unittests.sh
+	@printf "	FORMAT_i=\$$((\$$TEMP %% \$$FORMAT_LEN));\n" >> unittests.sh
+	@printf "	TEMP=\$$((\$$TEMP / \$$FORMAT_LEN));\n" >> unittests.sh
+	@printf "	SF_i=\$$((\$$TEMP %% \$$SF_LEN));\n" >> unittests.sh
+	@printf "	TEMP=\$$((\$$TEMP / \$$SF_LEN));\n" >> unittests.sh
+	@printf "	SFO_i=\$$((\$$TEMP %% \$$SFO_LEN));\n" >> unittests.sh
+	@printf "	TEST=\"./sparse_matrix.bin \$${SINGLE_FILE_OPERATION[SFO_i]} \$${SINGLE_FILES[S" >> unittests.sh
+	@printf "F_i]} \$${FORMAT[FORMAT_i]} \$${THREADING[THREADING_i]} -s\"\n" >> unittests.sh
+	@printf "	\$$TEST;\n" >> unittests.sh
 	@printf "	case \"\$$?\" in\n" >> unittests.sh
 	@printf "		0)\n" >> unittests.sh
-	@printf "			echo \"\$${TESTS[i]} \$${green}Success\$${end}\";;\n" >> unittests.sh
-	@printf "		1)\n" >> unittests.sh
-	@printf "			echo \"\$${TESTS[i]} \$${red}Error\$${end}\";;\n" >> unittests.sh
+	@printf "			echo \"\$$TEST \$${green}Success\$${end}\";;\n" >> unittests.sh
+	@printf "		*)\n" >> unittests.sh
+	@printf "			echo \"\$$TEST \$${red}Error\$${end}\";;\n" >> unittests.sh
 	@printf "	esac;\n" >> unittests.sh
 	@printf "done;\n" >> unittests.sh
-
+	@printf "NUM_TR_TESTS=\$$((\$$TRF_LEN*\$$FORMAT_LEN*THREADING_LEN))\n" >> unittests.sh
+	@printf "for((i = 0; i < NUM_TR_TESTS; ++i))\n" >> unittests.sh
+	@printf "do\n" >> unittests.sh
+	@printf "	TEMP=\$$((\$$i));\n" >> unittests.sh
+	@printf "	THREADING_i=\$$((\$$TEMP %% \$$THREADING_LEN));\n" >> unittests.sh
+	@printf "	TEMP=\$$((\$$TEMP / \$$THREADING_LEN));\n" >> unittests.sh
+	@printf "	FORMAT_i=\$$((\$$TEMP %% \$$FORMAT_LEN));\n" >> unittests.sh
+	@printf "	TEMP=\$$((\$$TEMP / \$$FORMAT_LEN));\n" >> unittests.sh
+	@printf "	TRF_i=\$$((TEMP %% TRF_LEN));\n" >> unittests.sh
+	@printf "	TEST=\"./sparse_matrix.bin --tr \$${TR_FILES[TRF_i]} \$${FORMAT[FORMAT_i]} \$${" >> unittests.sh
+	@printf "THREADING[THREADING_i]} -s\"\n" >> unittests.sh
+	@printf "	\$$TEST;\n" >> unittests.sh
+	@printf "	case \"\$$?\" in\n" >> unittests.sh
+	@printf "		0)\n" >> unittests.sh
+	@printf "			echo \"\$$TEST \$${green}Success\$${end}\";;\n" >> unittests.sh
+	@printf "		*)\n" >> unittests.sh
+	@printf "			echo \"\$$TEST \$${red}Error\$${end}\";;\n" >> unittests.sh
+	@printf "	esac;\n" >> unittests.sh
+	@printf "done;\n" >> unittests.sh
+	@printf "NUM_AD_TESTS=\$$((\$$ADF_LEN*\$$FORMAT_LEN*\$$THREADING_LEN))\n" >> unittests.sh
+	@printf "for ((i = 0; i<NUM_AD_TESTS; ++i));\n" >> unittests.sh
+	@printf "do\n" >> unittests.sh
+	@printf "	TEMP=\$$((\$$i));\n" >> unittests.sh
+	@printf "	THREADING_i=\$$((\$$TEMP %% \$$THREADING_LEN));\n" >> unittests.sh
+	@printf "	TEMP=\$$((\$$TEMP / \$$THREADING_LEN));\n" >> unittests.sh
+	@printf "	FORMAT_i=\$$((\$$TEMP %% \$$FORMAT_LEN));\n" >> unittests.sh
+	@printf "	TEMP=\$$((\$$TEMP / \$$FORMAT_LEN));\n" >> unittests.sh
+	@printf "	ADF_i=\$$((TEMP %% ADF_LEN));\n" >> unittests.sh
+	@printf "	TEST=\"./sparse_matrix.bin --ad \$${AD_FILES[ADF_i]} \$${FORMAT[FORMAT_i]} \$${" >> unittests.sh
+	@printf "THREADING[THREADING_i]} -s\"\n" >> unittests.sh
+	@printf "	\$$TEST;\n" >> unittests.sh
+	@printf "	case \"\$$?\" in\n" >> unittests.sh
+	@printf "		0)\n" >> unittests.sh
+	@printf "			echo \"\$$TEST \$${green}Success\$${end}\";;\n" >> unittests.sh
+	@printf "		*)\n" >> unittests.sh
+	@printf "			echo \"\$$TEST \$${red}Error\$${end}\";;\n" >> unittests.sh
+	@printf "	esac;\n" >> unittests.sh
+	@printf "done;\n" >> unittests.sh
+	@printf "NUM_MM_TESTS=\$$((\$$MMF_LEN*\$$FORMAT_LEN*\$$THREADING_LEN))\n" >> unittests.sh
+	@printf "for ((i = 0; i<NUM_AD_TESTS; ++i));\n" >> unittests.sh
+	@printf "do\n" >> unittests.sh
+	@printf "	TEMP=\$$((\$$i));\n" >> unittests.sh
+	@printf "	THREADING_i=\$$((\$$TEMP %% \$$THREADING_LEN));\n" >> unittests.sh
+	@printf "	TEMP=\$$((\$$TEMP / \$$THREADING_LEN));\n" >> unittests.sh
+	@printf "	FORMAT_i=\$$((\$$TEMP %% \$$FORMAT_LEN));\n" >> unittests.sh
+	@printf "	TEMP=\$$((\$$TEMP / \$$FORMAT_LEN));\n" >> unittests.sh
+	@printf "	MMF_i=\$$((TEMP %% MMF_LEN));\n" >> unittests.sh
+	@printf "	TEST=\"./sparse_matrix.bin --mm \$${MM_FILES[MMF_i]} \$${FORMAT[FORMAT_i]} \$${" >> unittests.sh
+	@printf "THREADING[THREADING_i]} -s\"\n" >> unittests.sh
+	@printf "	\$$TEST;\n" >> unittests.sh
+	@printf "	case \"\$$?\" in\n" >> unittests.sh
+	@printf "		0)\n" >> unittests.sh
+	@printf "			echo \"\$$TEST \$${green}Success\$${end}\";;\n" >> unittests.sh
+	@printf "		*)\n" >> unittests.sh
+	@printf "			echo \"\$$TEST \$${red}Error\$${end}\";;\n" >> unittests.sh
+	@printf "	esac;\n" >> unittests.sh
+	@printf "done;\n" >> unittests.sh
 
 int64.in:
 	@printf "int\n" > int64.in
@@ -462,9 +517,139 @@ float64.in:
 	@printf ".0 0.0 0.0 447.528193 658.680438 0.0 0.0 0.0 0.0 250.881822 0.0 0.0 0.0 0.0 786." >> float64.in
 	@printf "721885 0.0 0.0 0.0 670.728426 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0\n" >> float64.in
 
+	int64x32.in:
+	@printf "int\n" > int64x32.in
+	@printf "64\n" >> int64x32.in
+	@printf "32\n" >> int64x32.in
+	@printf "0 0 0 0 0 0 2580 0 0 3983 0 0 0 0 0 0 8106 0 0 0 0 0 9405 0 0 0 0 0 2836 0 5666 " >> int64x32.in
+	@printf "0 0 0 0 0 0 0 0 0 0 0 0 5155 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0" >> int64x32.in
+	@printf " 0 0 5202 0 0 0 0 0 0 0 0 0 0 0 6755 0 0 0 0 0 0 0 0 0 2660 0 0 0 0 0 0 0 0 0 0 " >> int64x32.in
+	@printf "6501 0 3650 0 0 0 0 0 169 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 9142 0 0 0 0 0 0 0 0 1" >> int64x32.in
+	@printf "892 0 0 0 0 0 0 4216 0 0 0 0 0 0 9248 3030 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2736 0 " >> int64x32.in
+	@printf "0 7888 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2153 0 0 0 0 0 0 " >> int64x32.in
+	@printf "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2279 0 0 7915 0 " >> int64x32.in
+	@printf "0 0 0 0 0 0 0 6321 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 8157 0 4751 0 0 0 0 0 0 0 0 0 0" >> int64x32.in
+	@printf " 0 0 0 0 0 0 0 0 0 0 9398 0 0 0 0 0 0 3257 0 0 0 0 0 0 0 0 0 6075 0 0 0 0 0 0 0 " >> int64x32.in
+	@printf "0 0 0 0 0 0 0 0 0 6092 0 0 0 0 0 0 0 0 0 0 0 0 0 2975 0 0 0 0 0 0 1012 0 449 0 0" >> int64x32.in
+	@printf " 0 1413 0 4504 6102 0 0 0 0 0 8786 6 0 0 0 0 0 2121 0 0 0 1463 0 0 0 0 0 0 0 0 0" >> int64x32.in
+	@printf " 0 0 0 5788 0 0 4183 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 9153 0 0 0 0 0 " >> int64x32.in
+	@printf "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 9304 0 0 0 0 0 0 0 0 318 0 7463 0 9982" >> int64x32.in
+	@printf " 0 1388 0 2389 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4884 0 339 0 0 0 0 0 0 0 0 " >> int64x32.in
+	@printf "0 2769 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 7690 0 0 0 0 0 0 0 0 0 0 0 0 107 0 0 0 " >> int64x32.in
+	@printf "0 0 0 0 0 2885 0 0 0 9853 0 0 0 0 0 0 0 0 0 0 0 0 0 2500 0 0 2916 209 5338 0 0 0" >> int64x32.in
+	@printf " 0 0 0 0 0 0 0 4054 2130 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0" >> int64x32.in
+	@printf " 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 825 0 0 0 0 0 0 0 0 0 0 0 1430 " >> int64x32.in
+	@printf "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 8290 0 0 0 0 0 0 90 0 0 0 0 " >> int64x32.in
+	@printf "0 5986 0 0 0 0 2885 0 0 0 0 0 0 0 0 0 0 5219 3521 0 9540 0 0 9933 0 0 0 0 0 0 23" >> int64x32.in
+	@printf "96 8758 0 0 0 1822 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2280 0 0 0 0 0 0 0 8475 0 0 0 0" >> int64x32.in
+	@printf " 6331 0 0 0 0 0 0 0 0 0 4064 0 0 0 0 0 0 0 0 954 9496 0 0 0 0 0 0 0 0 0 0 0 0 0 " >> int64x32.in
+	@printf "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 9213 0 0 0 0 0 0 0" >> int64x32.in
+	@printf " 0 0 5055 0 0 0 0 0 0 3698 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1867 0 0 0 0 0 0 0 2941" >> int64x32.in
+	@printf " 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1241 0 0 0 0 0 0 5888 0 0 0 0 0 0 0 0 0 0 0 0" >> int64x32.in
+	@printf " 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4645 4206 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0" >> int64x32.in
+	@printf " 0 0 0 0 4483 0 0 0 0 0 0 0 0 4167 0 0 0 1087 4343 0 9183 0 0 0 0 0 2826 0 0 0 0" >> int64x32.in
+	@printf " 0 0 0 0 0 0 0 0 0 0 0 0 0 9495 7651 0 0 0 0 0 0 0 0 0 0 0 0 0 5083 2205 0 0 730" >> int64x32.in
+	@printf "9 0 0 0 0 0 8383 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 8380 700 1456 0 0 0 0 0 4791 0 " >> int64x32.in
+	@printf "0 0 0 0 0 7320 0 0 0 9533 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 81" >> int64x32.in
+	@printf "76 0 0 0 1317 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 " >> int64x32.in
+	@printf "0 0 0 0 0 0 0 0 0 0 0 0 7265 3065 0 9581 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 7" >> int64x32.in
+	@printf "615 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2396 0 0 0 0 0 0 0 0 0 0 0 0" >> int64x32.in
+	@printf " 0 0 0 0 0 0 0 0 5330 0 0 0 0 0 0 0 536 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 " >> int64x32.in
+	@printf "0 0 3082 1550 0 0 0 0 0 0 0 0 0 0 0 0 0 8921 0 0 0 0 0 0 0 0 0 0 1555 0 0 0 0 0 " >> int64x32.in
+	@printf "4660 0 3613 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 230 0 0 " >> int64x32.in
+	@printf "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4382 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0" >> int64x32.in
+	@printf " 0 0 0 0 0 0 5324 0 0 0 0 4973 0 0 0 0 0 0 0 3370 0 0 0 0 0 0 0 0 0 5400 0 0 0 0" >> int64x32.in
+	@printf " 0 0 0 8448 0 0 0 0 0 0 3685 0 0 0 0 6546 3285 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0" >> int64x32.in
+	@printf " 8827 0 0 0 0 0 0 0 1516 0 1502 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 6130 0 0 0" >> int64x32.in
+	@printf " 0 0 0 0 0 0 0 0 0 1 0 4859 0 0 7965 0 0 2409 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2301 0" >> int64x32.in
+	@printf " 0 0 3204 0 0 0 0 4112 0 0 0 0 0 0 0 0 0 5319 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 " >> int64x32.in
+	@printf "0 0 0 0 0 0 0 0 0 8052 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3927 0 0 0 0 0 0 0 " >> int64x32.in
+	@printf "6708 0 0 0 2685 0 0 0 0 0 5258 0 0 9703 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 " >> int64x32.in
+	@printf "0 0 0 0 0 0 0 520 0 0 0 0 1802 0 8611 0 0 0 0 0 0 0 0 8621 0 0 0 0 0 0 0 0 0 0 0" >> int64x32.in
+	@printf " 0 0 0 0 0 0 0 0 7171 2932 0 0 4906 0 0 9007 2492 0 0 0 0 0 5147 0 0 0 0 0 0 0 0" >> int64x32.in
+	@printf " 0 0 1685 0 0 0 0 0 0 0 0 0 0 3637 0 0 0 0 0 0 0 0 0 0 0 0 4933 0 0 0 0 0 0 0 0 " >> int64x32.in
+	@printf "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 183 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 " >> int64x32.in
+	@printf "0 815 0 0 0 0 0 0 0 0 0 0 0 0 200 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 9496 0 127 0 673" >> int64x32.in
+	@printf "7 1289 0 0 0 4153 0 6746 0 48 0 0 0 0 0 0 0 0 0 0 0 0 3560 0 0 0 0 9092 0 2542 0" >> int64x32.in
+	@printf " 0 9492 0 0 0 0 0 0 0 0 0 7879 0 0 0 0 0 0 0 9947 3054 0 0 0 0 0 7075 0 0 0 0 0 " >> int64x32.in
+	@printf "0 0 0 0 0 0 0 0 5153 0 0 0 0 0 0 0 0 0 0 9996 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 15" >> int64x32.in
+	@printf "55 0 0 0 0 9477 0 0 0 0 0 0 0 0 0 0 0 0 0 9949 0 0 0 0 0 0 9357 0 0 0 0 0 3535 0" >> int64x32.in
+	@printf " 0 0 0 0 0 0 1583 0 5762 0 0 0 3672 0 0 0 0 0 0 0 0 939 0 0 0 7015 0 0 0 0 0 0 0" >> int64x32.in
+	@printf " 0 0 0 0 0 0 0 0 0 0 0 0 0 7627 0 0 2211 0 0 0 0 0 0 0 0 0 9026 0 0 0 0 0 0 0 0 " >> int64x32.in
+	@printf "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5719 0 0 0 0 0 0 6131 9262 0 0 0 0 0 0 0 0" >> int64x32.in
+	@printf " 1500 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3594 0 0 0 0 0 0 0 0 0 0 0 294" >> int64x32.in
+	@printf "6 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 9495 0 0 0 0 0 0 9701 0 0 0 0 " >> int64x32.in
+	@printf "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 8044 0 0 0\n" >> int64x32.in
+
+int32x64.in:
+	@printf "int\n" > int32x64.in
+	@printf "32\n" >> int32x64.in
+	@printf "64\n" >> int32x64.in
+	@printf "0 9228 0 0 0 0 9762 4950 0 6924 0 0 0 0 0 0 0 0 0 0 0 0 5247 0 0 0 0 0 0 0 0 0 0" >> int32x64.in
+	@printf " 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 9730 0 0 0 0 0 323 0 0 0 0 0 0 8246 899" >> int32x64.in
+	@printf " 0 9311 0 0 0 0 0 0 0 0 0 0 0 6939 0 0 0 0 0 0 1784 0 0 0 0 0 0 0 0 0 0 0 0 0 0 " >> int32x64.in
+	@printf "7173 0 2101 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 " >> int32x64.in
+	@printf "0 0 0 0 0 0 0 0 4600 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1530 0 0 0 0 0 0 0 0 0 0 6846 0" >> int32x64.in
+	@printf " 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 6459 0 0 1164 2403 0 0 0 0 3330 0 0 0 0 0 0 683" >> int32x64.in
+	@printf "6 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 8383 0 0 0 0 0 0 0 0 1551 0 5238 0 6974 0 0 0 0 " >> int32x64.in
+	@printf "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 9433 0 0 0 0 0 0 0 0 0 0 0 8869 0 0 0 0 " >> int32x64.in
+	@printf "0 0 0 0 0 0 0 0 0 6411 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 881" >> int32x64.in
+	@printf "9 0 0 6682 0 0 2718 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 6915 0 0 0 0" >> int32x64.in
+	@printf " 0 0 0 0 0 0 0 0 0 7278 0 0 0 0 7970 9727 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 " >> int32x64.in
+	@printf "0 0 0 0 0 0 8555 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2415 0 0 0 0 0 0 0 7570 0 0 0 0" >> int32x64.in
+	@printf " 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1832 0 4752 0 0 0 0 0" >> int32x64.in
+	@printf " 0 0 0 0 0 0 3782 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1614 0 0 0 0 0 0 0 0 0" >> int32x64.in
+	@printf " 0 0 8386 0 0 0 0 0 7334 0 0 0 0 7568 0 0 0 0 0 4198 0 0 0 0 0 0 535 2722 0 0 0 " >> int32x64.in
+	@printf "0 0 0 910 0 0 0 0 0 0 0 0 0 0 3542 0 0 0 0 0 0 0 0 9144 0 0 0 0 0 0 0 0 0 0 0 0 " >> int32x64.in
+	@printf "0 3421 0 0 0 0 0 0 0 0 0 0 3855 0 0 0 0 0 0 0 0 785 0 0 0 0 0 0 0 0 0 0 0 0 0 0 " >> int32x64.in
+	@printf "4228 8205 0 0 0 0 0 8902 0 0 0 0 0 0 0 0 7456 0 0 0 0 7985 0 0 0 0 0 0 0 0 0 0 8" >> int32x64.in
+	@printf "009 0 0 0 0 9660 6088 0 3535 0 8611 0 0 0 0 0 6785 5771 0 0 0 0 0 0 0 0 0 0 0 0 " >> int32x64.in
+	@printf "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 9507 0 0 0 0 0 0 0 0 0 0 0 0 9865 0 0 3378 0" >> int32x64.in
+	@printf " 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5008 0 " >> int32x64.in
+	@printf "0 82 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3020 0 0 0 9231 0 0 0 0 0 531" >> int32x64.in
+	@printf "5 0 0 0 0 7860 0 0 0 0 0 0 23 0 0 0 7355 0 6692 0 0 0 0 0 0 0 0 0 0 3110 0 0 0 0" >> int32x64.in
+	@printf " 0 0 0 0 0 0 0 0 0 0 6601 477 0 0 0 0 0 0 0 0 0 5023 0 0 9782 0 0 0 0 0 0 7241 0" >> int32x64.in
+	@printf " 0 9569 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2961 0 0 0 0 0 0 0 0 247 0 0 0 0 0 0 0 0 0" >> int32x64.in
+	@printf " 0 0 4570 0 0 0 1268 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1767 8020 0 0 0 4493 9179" >> int32x64.in
+	@printf " 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 7715 0 0 0 0 0 0 0 0 7226 0 0 0 0 0 0 0 0 0" >> int32x64.in
+	@printf " 0 0 0 0 8274 0 1941 0 0 0 0 0 0 0 0 0 0 9614 0 0 0 0 3886 8110 0 0 0 0 0 0 0 0 " >> int32x64.in
+	@printf "779 0 0 997 0 0 4686 0 0 0 0 0 3129 0 0 0 0 4679 0 0 0 0 0 7366 7069 0 0 0 0 150" >> int32x64.in
+	@printf "3 0 0 8201 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 472 0 0 0 0 0 0 0 0 0 0 0 0 0 2756 " >> int32x64.in
+	@printf "0 0 7525 2075 0 0 0 0 0 0 0 0 0 5877 0 0 0 0 0 0 4353 0 0 0 0 0 0 0 0 0 2727 0 0" >> int32x64.in
+	@printf " 0 0 0 0 0 0 0 0 0 0 6532 0 0 0 0 0 0 0 0 0 0 0 5313 0 0 0 0 0 0 0 0 0 0 2091 0 " >> int32x64.in
+	@printf "0 0 0 0 0 0 0 0 0 0 3362 0 1794 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 " >> int32x64.in
+	@printf "0 0 0 0 0 0 0 1385 0 0 5789 0 0 989 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 " >> int32x64.in
+	@printf "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3782 0 0 0 9909 0 0 0 0 " >> int32x64.in
+	@printf "0 8135 0 0 0 0 0 0 0 613 0 1026 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4857 0" >> int32x64.in
+	@printf " 0 0 0 0 5261 0 0 0 0 0 0 0 8226 0 5433 0 0 0 2357 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0" >> int32x64.in
+	@printf " 0 0 0 0 0 9442 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 7342 0 0 0 0" >> int32x64.in
+	@printf " 0 0 0 0 0 0 0 3522 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 9828 0 0 0 640 0 189" >> int32x64.in
+	@printf "2 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 9165 2652 7414 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0" >> int32x64.in
+	@printf " 0 0 0 0 4824 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 6198 0 0 0 0 0 0 0 0 0 0 0 0 0" >> int32x64.in
+	@printf " 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2167 0 " >> int32x64.in
+	@printf "0 0 0 0 0 0 0 0 0 8100 0 0 0 0 1100 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 37" >> int32x64.in
+	@printf "15 0 0 0 0 0 0 8012 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 6873 0 0 0 0 0 0 0 0 0" >> int32x64.in
+	@printf " 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 6838 0 0 0 0 0 0 0 0 6788 0 0 0 3025 0 0 3982 0" >> int32x64.in
+	@printf " 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0" >> int32x64.in
+	@printf " 0 4736 0 0 0 0 7964 0 0 0 0 0 0 0 0 0 0 0 4161 0 0 0 0 0 0 0 0 0 0 0 7510 0 0 0" >> int32x64.in
+	@printf " 0 0 0 0 0 0 0 0 3304 0 0 0 0 0 0 0 0 876 0 0 0 0 0 8481 5529 0 0 0 2235 0 0 0 0" >> int32x64.in
+	@printf " 4448 0 0 0 0 0 0 0 0 7229 0 0 0 0 8657 9555 0 0 0 0 0 0 0 0 4623 0 0 0 0 0 0 0 " >> int32x64.in
+	@printf "0 0 0 0 0 0 0 0 0 0 0 0 0 5509 0 0 0 0 0 0 0 0 0 0 628 0 0 0 0 0 0 0 4966 0 0 0 " >> int32x64.in
+	@printf "6489 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4551 0 0 0 0 0 0 0 0 4727 0" >> int32x64.in
+	@printf " 0 0 7848 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4146 0 0 0 0 0 0 0 0 0 0 0" >> int32x64.in
+	@printf " 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3084 0 0 0 0 0 0 0 0 8644 0 0 0 0 0 0 0 0 0 0 0 0" >> int32x64.in
+	@printf " 693 0 0 0 0 0 0 0 0 3537 0 6298 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3031 0 0 0 0 0 17" >> int32x64.in
+	@printf "50 0 7427 0 8006 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4148 0 0 0 0 0 0 0 0 0 0 0 " >> int32x64.in
+	@printf "0 2463 4961 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4479 0 0 0 0 0 3872 0 0 0 0 5550 0 496" >> int32x64.in
+	@printf "8 0 0 0 0 0 0 0 0 0 0 0 9211 0 0 0 2737 0 5482 0 6913 0 0 0 0 2347 0 0 0 0 0 0 0" >> int32x64.in
+	@printf " 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 9155 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 " >> int32x64.in
+	@printf "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0\n" >> int32x64.in
+
+
 clean:
 	rm int64.in
 	rm float64.in
+	rm int64x32.in
 	rm sparse_matrix.bin
 	rm unittests.sh
 	rm debug.bin
