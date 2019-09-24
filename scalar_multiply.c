@@ -118,7 +118,7 @@ mat_rv scalar_multiply_csr_nothreading(csr matrix, SCALAR *scalar)
 		}
 		result.ja[i] = matrix.ja[i];
 	}
-	for(int i = 0; i < matrix.cols + 1; ++i){
+	for(int i = 0; i < matrix.rows + 1; ++i){
 		result.ia[i] = matrix.ia[i];
 	}
 	get_utc_time(&end);
@@ -185,7 +185,7 @@ mat_rv scalar_multiply_csr(csr matrix, SCALAR *scalar, int thread_count)
 			result.ja[i] = matrix.ja[i];
 		}
 		#pragma omp for private(i)
-		for(i = 0; i < matrix.cols + 1; ++i)
+		for(i = 0; i < matrix.rows + 1; ++i)
 			result.ia[i] = matrix.ia[i];
 	}
 	get_utc_time(&end);
@@ -242,8 +242,7 @@ mat_rv scalar_multiply_csc_nothreading(csc matrix, SCALAR *scalar)
 		}
 		result.ja[i] = matrix.ja[i];
 	}
-	for(int i = 0; i < matrix.cols + 1; ++i)
-		result.ia[i] = matrix.ia[i];
+	memcpy(result.ia, matrix.ia, (result.cols + 1)* sizeof(int));
 	get_utc_time(&end);
 	rv = csc_to_mat_nothreading(result);
 	free_csc(result);

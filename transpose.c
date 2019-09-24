@@ -72,8 +72,8 @@ mat_rv transpose_csr_nothreading(csr matrix)
 	struct timespec start, end;
 	get_utc_time(&start);
 	csr result;
-	result.cols = matrix.rows;
 	result.rows = matrix.cols;
+	result.cols = matrix.rows;
 	result.type = matrix.type;
 	result.num_vals = matrix.num_vals;
 	if(!(result.ia = (int*)calloc(result.rows + 1, sizeof(int)))){
@@ -98,29 +98,28 @@ mat_rv transpose_csr_nothreading(csr matrix)
 	}
 	//creating a new array to contain lengths so don't have to search for
 	//next nonzero element and make complexity n^2
-	int *col_lens;
-	if(!(col_lens = (int*)calloc(result.cols, sizeof(int)))){
-		fprintf(stderr, "Ran out of virtual memory while allocating result matrix\n");
+	int *row_lens;
+	if(!(row_lens = (int*)calloc(result.rows, sizeof(int)))){
+		fprintf(stderr, "Ran out of virtual memory while allocating col_lens\n");
 		exit(EXIT_FAILURE);
 	}
-	//count num_vals per row
+	//store lengths of rows in result.ia
 	for(int i = 0; i < matrix.num_vals; ++i)
 		result.ia[matrix.ja[i] + 1]++;
+	//calculate ia
 	for(int i = 0; i < result.rows + 1; ++i)
-		result.ia[i+1] += result.ia[i];
+		result.ia[i + 1] += result.ia[i];
+	//cannot parallelise below
 	for(int i = 0; i < matrix.rows; ++i){
 		for(int j = matrix.ia[i]; j < matrix.ia[i + 1]; ++j){
-			//take the ia from whatever column it is currently + col_len as
-			//we're iterating from smallest row to largest row
-			result.ja[result.ia[matrix.ja[j]]+ col_lens[matrix.ja[j]]] = i;
 			if(result.type == MAT_INT)
-				result.nnz.i[result.ia[matrix.ja[j]] + col_lens[matrix.ja[j]]] = matrix.nnz.i[j];
+				result.nnz.i[result.ia[matrix.ja[j]] + row_lens[matrix.ja[j]]] = matrix.nnz.i[j];
 			else
-				result.nnz.f[result.ia[matrix.ja[j]] + col_lens[matrix.ja[j]]] = matrix.nnz.f[j];
-			col_lens[matrix.ja[j]]++;
+				result.nnz.f[result.ia[matrix.ja[j]] + row_lens[matrix.ja[j]]] = matrix.nnz.f[j];
+			result.ja[result.ia[matrix.ja[j]] + row_lens[matrix.ja[j]]++] = i;
 		}
 	}
-	free(col_lens);
+	free(row_lens);
 	get_utc_time(&end);
 	rv = csr_to_mat_nothreading(result);
 	rv.t_process = time_delta(end, start);
@@ -134,8 +133,8 @@ mat_rv transpose_csr(csr matrix, int thread_count)
 	struct timespec start, end;
 	get_utc_time(&start);
 	csr result;
-	result.cols = matrix.rows;
 	result.rows = matrix.cols;
+	result.cols = matrix.rows;
 	result.type = matrix.type;
 	result.num_vals = matrix.num_vals;
 	if(!(result.ia = (int*)calloc(result.rows + 1, sizeof(int)))){
@@ -160,31 +159,28 @@ mat_rv transpose_csr(csr matrix, int thread_count)
 	}
 	//creating a new array to contain lengths so don't have to search for
 	//next nonzero element and make complexity n^2
-	int *col_lens;
-	if(!(col_lens = (int*)calloc(result.cols, sizeof(int)))){
-		fprintf(stderr, "Ran out of virtual memory while allocating result matrix\n");
+	int *row_lens;
+	if(!(row_lens = (int*)calloc(result.rows, sizeof(int)))){
+		fprintf(stderr, "Ran out of virtual memory while allocating col_lens\n");
 		exit(EXIT_FAILURE);
 	}
-	//count num_vals per row (can't be parallelised)
+	//store lengths of rows in result.ia
 	for(int i = 0; i < matrix.num_vals; ++i)
 		result.ia[matrix.ja[i] + 1]++;
+	//calculate ia
 	for(int i = 0; i < result.rows + 1; ++i)
-		result.ia[i+1] += result.ia[i];
-	//below can't be parallelised due to requiring iterator go by smallest
-	//row to largest row and random access dependancies
+		result.ia[i + 1] += result.ia[i];
+	//cannot parallelise below
 	for(int i = 0; i < matrix.rows; ++i){
 		for(int j = matrix.ia[i]; j < matrix.ia[i + 1]; ++j){
-			//take the ia from whatever column it is currently + col_len as
-			//we're iterating from smallest row to largest row
-			result.ja[result.ia[matrix.ja[j]]+ col_lens[matrix.ja[j]]] = i;
 			if(result.type == MAT_INT)
-				result.nnz.i[result.ia[matrix.ja[j]] + col_lens[matrix.ja[j]]] = matrix.nnz.i[j];
+				result.nnz.i[result.ia[matrix.ja[j]] + row_lens[matrix.ja[j]]] = matrix.nnz.i[j];
 			else
-				result.nnz.f[result.ia[matrix.ja[j]] + col_lens[matrix.ja[j]]] = matrix.nnz.f[j];
-			col_lens[matrix.ja[j]]++;
+				result.nnz.f[result.ia[matrix.ja[j]] + row_lens[matrix.ja[j]]] = matrix.nnz.f[j];
+			result.ja[result.ia[matrix.ja[j]] + row_lens[matrix.ja[j]]++] = i;
 		}
 	}
-	free(col_lens);
+	free(row_lens);
 	get_utc_time(&end);
 	rv = csr_to_mat(result, thread_count);
 	rv.t_process = time_delta(end, start);
@@ -224,27 +220,27 @@ mat_rv transpose_csc_nothreading(csc matrix)
 	}
 	//creating a new array to contain lengths so don't have to search for
 	//next nonzero element and make complexity n^2
-	int *row_lens;
-	if(!(row_lens = (int*)calloc(result.rows, sizeof(int)))){
-		fprintf(stderr, "Ran out of virtual memory while allocating result matrix\n");
+	int *col_lens;
+	if(!(col_lens = (int*)calloc(result.cols, sizeof(int)))){
+		fprintf(stderr, "Ran out of virtual memory while allocating row_lens\n");
 		exit(EXIT_FAILURE);
 	}
-	//count num_vals per col
+	//store lengths of columns in result.ia
 	for(int i = 0; i < matrix.num_vals; ++i)
 		result.ia[matrix.ja[i] + 1]++;
+	//calculate ia
 	for(int i = 0; i < result.cols + 1; ++i)
-		result.ia[i+1] += result.ia[i];
+		result.ia[i + 1] += result.ia[i];
 	for(int i = 0; i < matrix.cols; ++i){
 		for(int j = matrix.ia[i]; j < matrix.ia[i + 1]; ++j){
-			result.ja[result.ia[matrix.ja[j]]+ row_lens[matrix.ja[j]]] = i;
 			if(result.type == MAT_INT)
-				result.nnz.i[result.ia[matrix.ja[j]] + row_lens[matrix.ja[j]]] = matrix.nnz.i[j];
+				result.nnz.i[result.ia[matrix.ja[j]] + col_lens[matrix.ja[j]]] = matrix.nnz.i[j];
 			else
-				result.nnz.f[result.ia[matrix.ja[j]] + row_lens[matrix.ja[j]]] = matrix.nnz.f[j];
-			row_lens[matrix.ja[j]]++;
+				result.nnz.f[result.ia[matrix.ja[j]] + col_lens[matrix.ja[j]]] = matrix.nnz.f[j];
+			result.ja[result.ia[matrix.ja[j]] + col_lens[matrix.ja[j]]++] = i;
 		}
 	}
-	free(row_lens);
+	free(col_lens);
 	get_utc_time(&end);
 	rv = csc_to_mat_nothreading(result);
 	rv.t_process = time_delta(end, start);
@@ -284,27 +280,28 @@ mat_rv transpose_csc(csc matrix, int thread_count)
 	}
 	//creating a new array to contain lengths so don't have to search for
 	//next nonzero element and make complexity n^2
-	int *row_lens;
-	if(!(row_lens = (int*)calloc(result.rows, sizeof(int)))){
-		fprintf(stderr, "Ran out of virtual memory while allocating result matrix\n");
+	int *col_lens;
+	if(!(col_lens = (int*)calloc(result.cols, sizeof(int)))){
+		fprintf(stderr, "Ran out of virtual memory while allocating row_lens\n");
 		exit(EXIT_FAILURE);
 	}
-	//count num_vals per col
+	//store lengths of columns in result.ia
 	for(int i = 0; i < matrix.num_vals; ++i)
 		result.ia[matrix.ja[i] + 1]++;
+	//calculate ia
 	for(int i = 0; i < result.cols + 1; ++i)
-		result.ia[i+1] += result.ia[i];
+		result.ia[i + 1] += result.ia[i];
+	//cannot parallelise below
 	for(int i = 0; i < matrix.cols; ++i){
 		for(int j = matrix.ia[i]; j < matrix.ia[i + 1]; ++j){
-			result.ja[result.ia[matrix.ja[j]]+ row_lens[matrix.ja[j]]] = i;
 			if(result.type == MAT_INT)
-				result.nnz.i[result.ia[matrix.ja[j]] + row_lens[matrix.ja[j]]] = matrix.nnz.i[j];
+				result.nnz.i[result.ia[matrix.ja[j]] + col_lens[matrix.ja[j]]] = matrix.nnz.i[j];
 			else
-				result.nnz.f[result.ia[matrix.ja[j]] + row_lens[matrix.ja[j]]] = matrix.nnz.f[j];
-			row_lens[matrix.ja[j]]++;
+				result.nnz.f[result.ia[matrix.ja[j]] + col_lens[matrix.ja[j]]] = matrix.nnz.f[j];
+			result.ja[result.ia[matrix.ja[j]] + col_lens[matrix.ja[j]]++] = i;
 		}
 	}
-	free(row_lens);
+	free(col_lens);
 	get_utc_time(&end);
 	rv = csc_to_mat(result, thread_count);
 	rv.t_process = time_delta(end, start);

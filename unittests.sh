@@ -28,11 +28,12 @@ SINGLE_FILES=(
 	"-f int64.in"
 	"-f float64.in"
 	"-f int64x32.in"
+	"-f int512x1024.in"
 );
 SF_LEN=${#SINGLE_FILES[@]}
 TR_FILES=(
-	"int64.in"
-	"float64.in"
+	"-f int64.in"
+	"-f float64.in"
 );
 TRF_LEN=${#TR_FILES[@]}
 MM_FILES=(

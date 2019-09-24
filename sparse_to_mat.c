@@ -28,18 +28,22 @@ mat_rv coo_to_mat_nothreading(coo matrix)
 			break;
 		}
 		if(rv.type == MAT_INT){
-			if (rv.vals.i[matrix.elems[i].i * rv.rows + matrix.elems[i].j] != 0){
+			if (rv.vals.i[matrix.elems[i].i * rv.cols + matrix.elems[i].j] != 0){
+				pint(matrix.elems[i].i);
+				pint(matrix.elems[i].j);
 				rv.error = ERR_DUPLICATE;
 				break;
 			}
-			rv.vals.i[matrix.elems[i].i * rv.rows + matrix.elems[i].j] = matrix.elems[i].val.i;
+			rv.vals.i[matrix.elems[i].i * rv.cols + matrix.elems[i].j] = matrix.elems[i].val.i;
 		}
 		else{
-			if (rv.vals.f[matrix.elems[i].i * rv.rows + matrix.elems[i].j] != 0.0){
+			if (rv.vals.f[matrix.elems[i].i * rv.cols + matrix.elems[i].j] != 0.0){
+				pint(matrix.elems[i].i);
+				pint(matrix.elems[i].j);
 				rv.error = ERR_DUPLICATE;
 				break;
 			}
-			rv.vals.f[matrix.elems[i].i * rv.rows + matrix.elems[i].j] = matrix.elems[i].val.f;
+			rv.vals.f[matrix.elems[i].i * rv.cols + matrix.elems[i].j] = matrix.elems[i].val.f;
 		}
 	}
 	get_utc_time(&end);
@@ -78,14 +82,14 @@ mat_rv coo_to_mat(coo matrix, int thread_count)
 			if(!(matrix.elems[i].i < rv.rows && matrix.elems[i].j < rv.cols))
 				rv.error = ERR_DIM_MISSMATCH;
 			if(local_type == MAT_INT){
-				if(rv.vals.i[matrix.elems[i].i * rv.rows + matrix.elems[i].j] != 0)
+				if(rv.vals.i[matrix.elems[i].i * rv.cols + matrix.elems[i].j] != 0)
 					rv.error = ERR_DUPLICATE;
-				rv.vals.i[matrix.elems[i].i * rv.rows + matrix.elems[i].j] = matrix.elems[i].val.i;
+				rv.vals.i[matrix.elems[i].i * rv.cols + matrix.elems[i].j] = matrix.elems[i].val.i;
 			}
 			else{
-				if (rv.vals.f[matrix.elems[i].i * rv.rows + matrix.elems[i].j] != 0.0)
+				if (rv.vals.f[matrix.elems[i].i * rv.cols + matrix.elems[i].j] != 0.0)
 					rv.error = ERR_DUPLICATE;
-				rv.vals.f[matrix.elems[i].i * rv.rows + matrix.elems[i].j] = matrix.elems[i].val.f;
+				rv.vals.f[matrix.elems[i].i * rv.cols + matrix.elems[i].j] = matrix.elems[i].val.f;
 			}
 		}
 	}
@@ -261,13 +265,13 @@ mat_rv csc_to_mat(csc matrix, int thread_count)
 	rv.type = matrix.type;
 	rv.isval = false;
 	if(matrix.type == MAT_INT){
-		if(!(rv.vals.i = (int*)calloc((rv.cols * rv.rows), sizeof(int)))){
+		if(!(rv.vals.i = (int*)calloc((rv.rows * rv.cols), sizeof(int)))){
 			fprintf(stderr,"Ran out of virtual memory while allocating mat_rv struct\n");
 			exit(EXIT_FAILURE);
 		}
 	}
 	else{
-		if(!(rv.vals.f = (long double*)calloc((rv.cols * rv.rows), sizeof(long double)))){
+		if(!(rv.vals.f = (long double*)calloc((rv.rows * rv.cols), sizeof(long double)))){
 			fprintf(stderr,"Ran out of virtual memory while allocating mat_rv struct\n");
 			exit(EXIT_FAILURE);
 		}
