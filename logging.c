@@ -206,7 +206,8 @@ void create_log_file(struct timespec call_time, OPERATION operation, int numfile
 		fputs("\r\n",logfp);
 	else
 		fputc('\n',logfp);
-	fprintf(logfp, "%Lf", (long double)result.t_construct.tv_sec + (long double)result.t_construct.tv_nsec / 1E9);
+	struct timespec log_construct = time_sum(result.t_fileio, result.t_construct);
+	fprintf(logfp, "%Lf", (long double)log_construct.tv_sec + (long double)log_construct.tv_nsec / 1E9);
 	if(system == WINDOWS)
 		fputs("\r\n",logfp);
 	else

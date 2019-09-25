@@ -57,7 +57,7 @@ do
 	SF_i=$(($TEMP % $SF_LEN));
 	TEMP=$(($TEMP / $SF_LEN));
 	SFO_i=$(($TEMP % $SFO_LEN));
-	TEST="./sparse_matrix.bin ${SINGLE_FILE_OPERATION[SFO_i]} ${SINGLE_FILES[SF_i]} ${FORMAT[FORMAT_i]} ${THREADING[THREADING_i]} -s"
+	TEST="./sparse_matrix.bin ${SINGLE_FILE_OPERATION[SFO_i]} ${SINGLE_FILES[SF_i]} ${FORMAT[FORMAT_i]} ${THREADING[THREADING_i]}"
 	$TEST;
 	case "$?" in
 		0)
@@ -75,7 +75,7 @@ do
 	FORMAT_i=$(($TEMP % $FORMAT_LEN));
 	TEMP=$(($TEMP / $FORMAT_LEN));
 	TRF_i=$((TEMP % TRF_LEN));
-	TEST="./sparse_matrix.bin --tr ${TR_FILES[TRF_i]} ${FORMAT[FORMAT_i]} ${THREADING[THREADING_i]} -s"
+	TEST="./sparse_matrix.bin --tr ${TR_FILES[TRF_i]} ${FORMAT[FORMAT_i]} ${THREADING[THREADING_i]}"
 	$TEST;
 	case "$?" in
 		0)
@@ -93,7 +93,7 @@ do
 	FORMAT_i=$(($TEMP % $FORMAT_LEN));
 	TEMP=$(($TEMP / $FORMAT_LEN));
 	ADF_i=$((TEMP % ADF_LEN));
-	TEST="./sparse_matrix.bin --ad ${AD_FILES[ADF_i]} ${FORMAT[FORMAT_i]} ${THREADING[THREADING_i]} -s"
+	TEST="./sparse_matrix.bin --ad ${AD_FILES[ADF_i]} ${FORMAT[FORMAT_i]} ${THREADING[THREADING_i]}"
 	$TEST;
 	case "$?" in
 		0)
@@ -111,7 +111,7 @@ do
 	FORMAT_i=$(($TEMP % $FORMAT_LEN));
 	TEMP=$(($TEMP / $FORMAT_LEN));
 	MMF_i=$((TEMP % MMF_LEN));
-	TEST="./sparse_matrix.bin --mm ${MM_FILES[MMF_i]} ${FORMAT[FORMAT_i]} ${THREADING[THREADING_i]} -s"
+	TEST="./sparse_matrix.bin --mm ${MM_FILES[MMF_i]} ${FORMAT[FORMAT_i]} ${THREADING[THREADING_i]}"
 	$TEST;
 	case "$?" in
 		0)

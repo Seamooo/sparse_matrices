@@ -328,36 +328,42 @@ mat_rv scalar_multiply(OPERATIONARGS *args)
 	switch(args->format){
 	case COO:{
 		struct timespec construct;
-		coo matrix = read_coo(args->file1, &construct);
+		struct timespec fileio_timer;
+		coo matrix = read_coo(args->file1, &construct, &fileio_timer);
 		if(args->nothreading)
 			rv = scalar_multiply_coo_nothreading(matrix, &(args->scalar));
 		else
 			rv = scalar_multiply_coo(matrix, &(args->scalar), args->num_threads);
 		rv.t_construct = time_sum(rv.t_construct, construct);
+		rv.t_fileio = fileio_timer;
 		free_coo(matrix);
 		return rv;
 		break;
 	}
 	case CSR:{
 		struct timespec construct;
-		csr matrix = read_csr(args->file1, &construct);
+		struct timespec fileio_timer;
+		csr matrix = read_csr(args->file1, &construct, &fileio_timer);
 		if(args->nothreading)
 			rv = scalar_multiply_csr_nothreading(matrix, &(args->scalar));
 		else
 			rv = scalar_multiply_csr(matrix, &(args->scalar), args->num_threads);
 		rv.t_construct = time_sum(rv.t_construct, construct);
+		rv.t_fileio = fileio_timer;
 		free_csr(matrix);
 		return rv;
 		break;
 	}
 	case CSC:{
 		struct timespec construct;
-		csc matrix = read_csc(args->file1, &construct);
+		struct timespec fileio_timer;
+		csc matrix = read_csc(args->file1, &construct, &fileio_timer);
 		if(args->nothreading)
 			rv = scalar_multiply_csc_nothreading(matrix, &(args->scalar));
 		else
 			rv = scalar_multiply_csc(matrix, &(args->scalar), args->num_threads);
 		rv.t_construct = time_sum(rv.t_construct, construct);
+		rv.t_fileio = fileio_timer;
 		free_csc(matrix);
 		return rv;
 		break;

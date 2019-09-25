@@ -134,15 +134,18 @@ int read_dim(FILE *file)
 
 //made the decision to not write a function to convert to a 2d representation of the values
 //as this way is more efficient. For some structures this couldn't be avoided
-coo read_coo(FILE* file, struct timespec *timer)
+coo read_coo(FILE* file, struct timespec *timer, struct timespec *fileio_timer)
 {
+	struct timespec start, end;
+	get_utc_time(&start);
 	coo rv;
 	rv.type = get_type(file);
 	rv.rows = read_dim(file);
 	rv.cols = read_dim(file);
 	char *line = readline(file);
 	fclose(file);
-	struct timespec start, end;
+	get_utc_time(&end);
+	*fileio_timer = time_delta(end, start);
 	get_utc_time(&start);
 	int size = MALLOCINIT;
 	if(!(rv.elems = malloc(size*sizeof(coo_elem)))){
@@ -190,7 +193,7 @@ coo read_coo(FILE* file, struct timespec *timer)
 	return rv;
 }
 
-csr read_csr(FILE *file, struct timespec *timer)
+csr read_csr(FILE *file, struct timespec *timer, struct timespec *fileio_timer)
 {
 	csr rv;
 	rv.type = get_type(file);
@@ -275,15 +278,18 @@ csr read_csr(FILE *file, struct timespec *timer)
 	return rv;
 }
 
-csc read_csc(FILE *file, struct timespec *timer)
+csc read_csc(FILE *file, struct timespec *timer, struct timespec *fileio_timer)
 {
+	struct timespec start, end;
+	get_utc_time(&start);
 	csc rv;
 	rv.type = get_type(file);
 	rv.rows = read_dim(file);
 	rv.cols = read_dim(file);
 	char *line = readline(file);
 	fclose(file);
-	struct timespec start, end;
+	get_utc_time(&end);
+	*fileio_timer = time_delta(end, start);
 	get_utc_time(&start);
 	rv.num_vals = 0;
 	int nnz_size = MALLOCINIT;

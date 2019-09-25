@@ -29,8 +29,6 @@ mat_rv coo_to_mat_nothreading(coo matrix)
 		}
 		if(rv.type == MAT_INT){
 			if (rv.vals.i[matrix.elems[i].i * rv.cols + matrix.elems[i].j] != 0){
-				pint(matrix.elems[i].i);
-				pint(matrix.elems[i].j);
 				rv.error = ERR_DUPLICATE;
 				break;
 			}
@@ -38,8 +36,6 @@ mat_rv coo_to_mat_nothreading(coo matrix)
 		}
 		else{
 			if (rv.vals.f[matrix.elems[i].i * rv.cols + matrix.elems[i].j] != 0.0){
-				pint(matrix.elems[i].i);
-				pint(matrix.elems[i].j);
 				rv.error = ERR_DUPLICATE;
 				break;
 			}

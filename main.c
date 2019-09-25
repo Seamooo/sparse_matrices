@@ -1,13 +1,4 @@
-#include "main.h"
-
-//TODO:
-//add help flag and ability to display help page when no args given
-//add ability to speed up with the stack rather than using the heap with lower amounts of elements
-//need to be rigorous to check for memory leeks (check every size, attempt to index)
-//if there's time change return values to sparse formats and pass time_spec structs
-//implement threading for construction and destruction
-//operation_args no longer required to be pointer
-//use schedule directive for trace
+ #include "main.h"
 
 //notes:
 //not freeing memory before exitting as OS should release allocated memory on exit
@@ -29,7 +20,8 @@ int main(int argc, char *argv[])
 	//populating to prevent any weird compiler behaviour
 	operation_args.scalar.val.i = 0;
 	bool logging = false;
-	bool silence = false;
+	bool print_repr = false;
+	bool print_timing = false;
 	char *filename1 = NULL;
 	char *filename2 = NULL;
 	//parse command line args
@@ -98,8 +90,8 @@ int main(int argc, char *argv[])
 			}
 			else if(strncmp("-l",argv[i], 2*sizeof(char)) == 0)
 				logging = true;
-			else if(strncmp("-s",argv[i], 2*sizeof(char)) == 0)
-				silence = true;
+			else if(strncmp("-p",argv[i], 2*sizeof(char)) == 0)
+				print_repr = true;
 			else{
 				fprintf(stderr, "unkown option: %s\n", argv[i]);
 				exit(EXIT_FAILURE);
@@ -198,8 +190,6 @@ int main(int argc, char *argv[])
 						operation_args.format = CSR;
 					else if(strncmp("CSC",argv[i],3 * sizeof(char)) == 0)
 						operation_args.format = CSC;
-					else if(strncmp("CDS",argv[i],3 * sizeof(char)) == 0)
-						operation_args.format = CDS;
 					else{
 						fprintf(stderr, "unrecognised format: %s\n",argv[i]);
 						exit(EXIT_FAILURE);
@@ -210,6 +200,8 @@ int main(int argc, char *argv[])
 					exit(EXIT_FAILURE);
 				}
 			}
+			else if(strncmp("--timing", argv[i], 8 * sizeof(char)) == 0)
+				print_timing = true;
 			else{
 				fprintf(stderr, "unknown option %s\n", argv[i]);
 				exit(EXIT_FAILURE);
@@ -336,7 +328,11 @@ int main(int argc, char *argv[])
 			operation_args.num_threads,
 			result);
 	}
-	if(!silence)
+	if(print_repr)
 		print_mat_rv(result);
+	if(print_timing){
+		printf("%Lf\n", (long double)result.t_construct.tv_sec + (long double)result.t_construct.tv_nsec / 1E9);
+		printf("%Lf\n", (long double)result.t_process.tv_sec + (long double)result.t_process.tv_nsec / 1E9);
+	}
 	exit(EXIT_SUCCESS);
 }

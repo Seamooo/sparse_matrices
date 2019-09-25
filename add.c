@@ -737,14 +737,16 @@ mat_rv addition(OPERATIONARGS *args)
 	switch(args->format){
 	case COO:{
 		struct timespec delta1, delta2;
-		coo matrix1 = read_coo(args->file1, &delta1);
-		coo matrix2 = read_coo(args->file2, &delta2);
+		struct timespec fileio1, fileio2;
+		coo matrix1 = read_coo(args->file1, &delta1, &fileio1);
+		coo matrix2 = read_coo(args->file2, &delta2, &fileio2);
 		struct timespec construct = time_sum(delta1, delta2);
 		if(args->nothreading)
 			rv = addition_coo_nothreading(matrix1, matrix2);
 		else
 			rv = addition_coo(matrix1, matrix2, args->num_threads);
 		rv.t_construct = time_sum(rv.t_construct, construct);
+		rv.t_fileio = time_sum(fileio1, fileio2);
 		free_coo(matrix1);
 		free_coo(matrix2);
 		return rv;
@@ -752,14 +754,16 @@ mat_rv addition(OPERATIONARGS *args)
 	}
 	case CSR:{
 		struct timespec delta1, delta2;
-		csr matrix1 = read_csr(args->file1, &delta1);
-		csr matrix2 = read_csr(args->file2, &delta2);
+		struct timespec fileio1, fileio2;
+		csr matrix1 = read_csr(args->file1, &delta1, &fileio1);
+		csr matrix2 = read_csr(args->file2, &delta2, &fileio2);
 		struct timespec construct = time_sum(delta1, delta2);
 		if(args->nothreading)
 			rv = addition_csr_nothreading(matrix1, matrix2);
 		else
 			rv = addition_csr(matrix1, matrix2, args->num_threads);
 		rv.t_construct = time_sum(rv.t_construct, construct);
+		rv.t_fileio = time_sum(fileio1, fileio2);
 		free_csr(matrix1);
 		free_csr(matrix2);
 		return rv;
@@ -767,14 +771,16 @@ mat_rv addition(OPERATIONARGS *args)
 	}
 	case CSC:{
 		struct timespec delta1, delta2;
-		csc matrix1 = read_csc(args->file1, &delta1);
-		csc matrix2 = read_csc(args->file2, &delta2);
+		struct timespec fileio1, fileio2;
+		csc matrix1 = read_csc(args->file1, &delta1, &fileio1);
+		csc matrix2 = read_csc(args->file2, &delta2, &fileio2);
 		struct timespec construct = time_sum(delta1, delta2);
 		if(args->nothreading)
 			rv = addition_csc_nothreading(matrix1, matrix2);
 		else
 			rv = addition_csc(matrix1, matrix2, args->num_threads);
 		rv.t_construct = time_sum(rv.t_construct, construct);
+		rv.t_fileio = time_sum(fileio1, fileio2);
 		free_csc(matrix1);
 		free_csc(matrix2);
 		return rv;

@@ -6,21 +6,17 @@ Supported on macintosh, linux, windows
 mac/linux compilation:  
 `make`
 
-Windows compilation:  
-open win.cfg and change vs_path to the directory containing visual studio  
-startmake.bat
-
 Usage
 -----
 `./sparse_matrix.[bin | exe] <--tr | --ad | ...> -f <file1> [file2]`
 
 Additional Flags
 ----------------
-`-t` specify number of threads  
+`-t %d` specify number of threads  
 `-l` log output  
 `--format <COO | CSR | ...> [BCSR BLOCK SIZE]` specify matrix format  
 `--nothreading` run with no threading  
-`-s` run with silenced output  
+`-p` run with silenced output  
 
 
 Supported sparse matrix formats
@@ -31,8 +27,6 @@ Compressed Sparse Column (CSC)
 Compressed Diagonal Storage (CDS) --not implemented  
 
 Known Bugs:
------------
-scalar multiple not included does not throw error  
   
 Resources:
 ----------

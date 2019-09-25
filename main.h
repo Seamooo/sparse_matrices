@@ -10,8 +10,8 @@
 #define __unix__
 #endif
 //need to specify environment for timezone
-#ifndef _DEFAULT_SORUCE
-#define _DEFAULT_SORUCE
+#ifndef _DEFAULT_SOURCE
+#define _DEFAULT_SOURCE
 #endif
 
 #elif defined __APPLE__ && __MACH__
@@ -42,14 +42,6 @@
 
 #define MALLOCINIT 16
 
-//debug macros:
-#define p() printf("got here\n"); fflush(stdout);
-#define pstr(x) printf("%s = %s\n",#x,x); fflush(stdout);
-#define pint(x) printf("%s = %d\n",#x,x); fflush(stdout);
-#define pld(x) printf("%s = %Lf\n",#x,x); fflush(stdout);
-#define phex(x) for(int i = 0; x[i] != '\0'; ++i){printf("%02x ", x[i]);} printf("\n"); fflush(stdout);
-#define paddr(x) printf("%s = %p\n", #x, (void*)x); fflush(stdout);
-
 typedef enum {
 	NO_OPERATION,
 	SCAL_MUL,
@@ -62,8 +54,7 @@ typedef enum{
 	FORM_DEFAULT,
 	COO,
 	CSR,
-	CSC,
-	CDS,
+	CSC
 } FORMAT;
 typedef enum {
 	MAT_NONE,
@@ -121,22 +112,13 @@ typedef struct {
 } csr;
 //ia_len == cols + 1 for below
 typedef csr csc;
-typedef struct{
-	MAT_TYPE type;
-	union {
-		long double **f;
-		int **i;
-	} vals;
-	int n;
-	int half_bw_hi;
-	int half_bw_lo;
-} cds;
 //mat_rv struct will always be returned
 typedef struct{
 	MAT_TYPE type;
 	RV_ERROR error;
 	struct timespec t_construct;
 	struct timespec t_process;
+	struct timespec t_fileio;
 	bool isval;
 	int rows;
 	int cols;
@@ -182,9 +164,9 @@ extern void free_csr(csr);
 extern void free_csc(csc);
 
 //read mat functions
-extern coo read_coo(FILE*, struct timespec*);
-extern csr read_csr(FILE*, struct timespec*);
-extern csc read_csc(FILE*, struct timespec*);
+extern coo read_coo(FILE*, struct timespec*, struct timespec*);
+extern csr read_csr(FILE*, struct timespec*, struct timespec*);
+extern csc read_csc(FILE*, struct timespec*, struct timespec*);
 
 //conversion functions
 extern mat_rv coo_to_mat_nothreading(coo);

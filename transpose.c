@@ -316,48 +316,56 @@ mat_rv transpose(OPERATIONARGS *args)
 	switch(args->format){
 	case FORM_DEFAULT:{
 		struct timespec construct;
-		csr matrix = read_csr(args->file1, &construct);
+		struct timespec fileio_timer;
+		csr matrix = read_csr(args->file1, &construct, &fileio_timer);
 		if(args->nothreading)
 			rv = transpose_csr_csc_nothreading(matrix);
 		else
 			rv = transpose_csr_csc(matrix, args->num_threads);
 		rv.t_construct = time_sum(rv.t_construct, construct);
+		rv.t_fileio = fileio_timer;
 		free_csr(matrix);
 		return rv;
 		break;
 	}
 	case COO:{
 		struct timespec construct;
-		coo matrix = read_coo(args->file1, &construct);
+		struct timespec fileio_timer;
+		coo matrix = read_coo(args->file1, &construct, &fileio_timer);
 		if(args->nothreading)
 			rv = transpose_coo_nothreading(matrix);
 		else
 			rv = transpose_coo(matrix, args->num_threads);
 		rv.t_construct = time_sum(rv.t_construct, construct);
+		rv.t_fileio = fileio_timer;
 		free_coo(matrix);
 		return rv;
 		break;
 	}
 	case CSR:{
 		struct timespec construct;
-		csr matrix = read_csr(args->file1, &construct);
+		struct timespec fileio_timer;
+		csr matrix = read_csr(args->file1, &construct, &fileio_timer);
 		if(args->nothreading)
 			rv = transpose_csr_nothreading(matrix);
 		else
 			rv = transpose_csr(matrix, args->num_threads);
 		rv.t_construct = time_sum(rv.t_construct, construct);
+		rv.t_fileio = fileio_timer;
 		free_csr(matrix);
 		return rv;
 		break;
 	}
 	case CSC:{
 		struct timespec construct;
-		csc matrix = read_csc(args->file1, &construct);
+		struct timespec fileio_timer;
+		csc matrix = read_csc(args->file1, &construct, &fileio_timer);
 		if(args->nothreading)
 			rv = transpose_csc_nothreading(matrix);
 		else
 			rv = transpose_csc(matrix, args->num_threads);
 		rv.t_construct = time_sum(rv.t_construct, construct);
+		rv.t_fileio = fileio_timer;
 		free_csc(matrix);
 		return rv;
 		break;

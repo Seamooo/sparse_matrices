@@ -21,7 +21,7 @@ install:
 	@make int64x32.in
 	@make int32x64.in
 	@make sparse_matrix.bin
-	echo "run unittests.sh to check install was successful"
+	@echo "run unittests.sh to check install was successful"
 
 #remember to update when finalised
 unittests.sh:
@@ -85,7 +85,7 @@ unittests.sh:
 	@printf "	TEMP=\$$((\$$TEMP / \$$SF_LEN));\n" >> unittests.sh
 	@printf "	SFO_i=\$$((\$$TEMP %% \$$SFO_LEN));\n" >> unittests.sh
 	@printf "	TEST=\"./sparse_matrix.bin \$${SINGLE_FILE_OPERATION[SFO_i]} \$${SINGLE_FILES[S" >> unittests.sh
-	@printf "F_i]} \$${FORMAT[FORMAT_i]} \$${THREADING[THREADING_i]} -s\"\n" >> unittests.sh
+	@printf "F_i]} \$${FORMAT[FORMAT_i]} \$${THREADING[THREADING_i]}\"\n" >> unittests.sh
 	@printf "	\$$TEST;\n" >> unittests.sh
 	@printf "	case \"\$$?\" in\n" >> unittests.sh
 	@printf "		0)\n" >> unittests.sh
@@ -104,7 +104,7 @@ unittests.sh:
 	@printf "	TEMP=\$$((\$$TEMP / \$$FORMAT_LEN));\n" >> unittests.sh
 	@printf "	TRF_i=\$$((TEMP %% TRF_LEN));\n" >> unittests.sh
 	@printf "	TEST=\"./sparse_matrix.bin --tr \$${TR_FILES[TRF_i]} \$${FORMAT[FORMAT_i]} \$${" >> unittests.sh
-	@printf "THREADING[THREADING_i]} -s\"\n" >> unittests.sh
+	@printf "THREADING[THREADING_i]}\"\n" >> unittests.sh
 	@printf "	\$$TEST;\n" >> unittests.sh
 	@printf "	case \"\$$?\" in\n" >> unittests.sh
 	@printf "		0)\n" >> unittests.sh
@@ -123,7 +123,7 @@ unittests.sh:
 	@printf "	TEMP=\$$((\$$TEMP / \$$FORMAT_LEN));\n" >> unittests.sh
 	@printf "	ADF_i=\$$((TEMP %% ADF_LEN));\n" >> unittests.sh
 	@printf "	TEST=\"./sparse_matrix.bin --ad \$${AD_FILES[ADF_i]} \$${FORMAT[FORMAT_i]} \$${" >> unittests.sh
-	@printf "THREADING[THREADING_i]} -s\"\n" >> unittests.sh
+	@printf "THREADING[THREADING_i]}\"\n" >> unittests.sh
 	@printf "	\$$TEST;\n" >> unittests.sh
 	@printf "	case \"\$$?\" in\n" >> unittests.sh
 	@printf "		0)\n" >> unittests.sh
@@ -142,7 +142,7 @@ unittests.sh:
 	@printf "	TEMP=\$$((\$$TEMP / \$$FORMAT_LEN));\n" >> unittests.sh
 	@printf "	MMF_i=\$$((TEMP %% MMF_LEN));\n" >> unittests.sh
 	@printf "	TEST=\"./sparse_matrix.bin --mm \$${MM_FILES[MMF_i]} \$${FORMAT[FORMAT_i]} \$${" >> unittests.sh
-	@printf "THREADING[THREADING_i]} -s\"\n" >> unittests.sh
+	@printf "THREADING[THREADING_i]}\"\n" >> unittests.sh
 	@printf "	\$$TEST;\n" >> unittests.sh
 	@printf "	case \"\$$?\" in\n" >> unittests.sh
 	@printf "		0)\n" >> unittests.sh
@@ -517,7 +517,7 @@ float64.in:
 	@printf ".0 0.0 0.0 447.528193 658.680438 0.0 0.0 0.0 0.0 250.881822 0.0 0.0 0.0 0.0 786." >> float64.in
 	@printf "721885 0.0 0.0 0.0 670.728426 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0\n" >> float64.in
 
-	int64x32.in:
+int64x32.in:
 	@printf "int\n" > int64x32.in
 	@printf "64\n" >> int64x32.in
 	@printf "32\n" >> int64x32.in
