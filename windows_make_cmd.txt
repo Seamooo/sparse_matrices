@@ -1,0 +1,1 @@
+cl free_mat.c execute_operation.c readline.c read_mat.c scalar_multiply.c trace.c add.c transpose.c mat_mul.c sparse_to_mat.c print_repr.c sort_mat.c timer.c logging.c main.c /openmp /Fe:sparse_matrix.exe
